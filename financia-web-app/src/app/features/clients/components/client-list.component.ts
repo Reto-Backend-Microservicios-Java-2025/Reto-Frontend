@@ -369,7 +369,7 @@ export class ClientListComponent implements OnInit {
 
   deleteClient(client: Client): void {
     if (confirm(`¿Seguro que deseas eliminar al cliente ${client.full_name} ${client.full_last_name}?`)) {
-      this.clientService.deleteClient(client.uniqueCode).subscribe({
+      this.clientService.deleteClient(Number(client.uniqueCode)).subscribe({
         next: () => {
           this.snackBar.open('Cliente eliminado exitosamente', 'Cerrar', { duration: 3000 });
           this.loadClients();
