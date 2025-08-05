@@ -67,7 +67,7 @@ import { User } from '../../../shared/models/user.model';
       margin: 4px 16px;
       border-radius: 12px;
       transition: all 0.3s ease;
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     .nav-item:hover {
@@ -112,7 +112,7 @@ import { User } from '../../../shared/models/user.model';
     }
 
     .user-info {
-      color: #e0e0e0;
+      color: #ffffff;
       margin-right: 16px;
       font-size: 0.9rem;
     }
@@ -127,7 +127,7 @@ import { User } from '../../../shared/models/user.model';
     }
 
     .menu-item {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     .menu-item:hover {

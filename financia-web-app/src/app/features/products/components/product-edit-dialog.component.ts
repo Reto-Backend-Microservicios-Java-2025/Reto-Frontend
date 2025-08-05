@@ -108,7 +108,7 @@ export interface ProductDialogData {
     }
 
     .form-input, .form-select {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     .field-icon {
@@ -205,7 +205,7 @@ export interface ProductDialogData {
     }
 
     ::ng-deep .mat-select-value {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     ::ng-deep .mat-select-arrow {
@@ -213,7 +213,7 @@ export interface ProductDialogData {
     }
 
     ::ng-deep .mat-option {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     ::ng-deep .mat-option:hover {

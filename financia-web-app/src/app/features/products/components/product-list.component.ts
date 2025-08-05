@@ -72,7 +72,7 @@ import { ProductEditDialogComponent } from './product-edit-dialog.component';
       margin: 4px 16px;
       border-radius: 12px;
       transition: all 0.3s ease;
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     .nav-item:hover {
@@ -117,7 +117,7 @@ import { ProductEditDialogComponent } from './product-edit-dialog.component';
     }
 
     .user-info {
-      color: #e0e0e0;
+      color: #ffffff;
       margin-right: 16px;
       font-size: 0.9rem;
     }
@@ -132,7 +132,7 @@ import { ProductEditDialogComponent } from './product-edit-dialog.component';
     }
 
     .menu-item {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     .menu-item:hover {

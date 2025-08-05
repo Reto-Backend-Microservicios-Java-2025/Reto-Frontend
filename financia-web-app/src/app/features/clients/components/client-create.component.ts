@@ -210,7 +210,7 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
     }
 
     .form-input, .form-select {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     .field-icon {
@@ -302,7 +302,7 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
     }
 
     ::ng-deep .mat-select-value {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     ::ng-deep .mat-select-arrow {
