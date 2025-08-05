@@ -240,54 +240,49 @@ export class ProductEditDialogComponent implements OnInit {
       } else {
         // Create new product
         const formValue = this.productForm.value;
-        let clientId = Number(formValue.clientId);
         let selectedClient = this.clients.find(c => String(c.id) === formValue.clientId || String(c.uniqueCode) === formValue.clientId);
-        if (selectedClient) {
-          try {
-            const clientWithProducts = await this.clientService.getClientByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
-            if (clientWithProducts && typeof clientWithProducts.id === 'number' && clientWithProducts.id > 0) {
-              clientId = clientWithProducts.id;
-            } else {
+        if (!selectedClient) {
+          this.isLoading = false;
+          this.snackBar.open('Cliente no encontrado', 'Cerrar', { duration: 5000 });
+          return;
+        }
+        try {
+          const clientWithProducts = await this.clientService.getClientByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
+          if (clientWithProducts && typeof clientWithProducts.id === 'number' && clientWithProducts.id > 0) {
+            const createRequest: CreateProductRequest = {
+              clientId: clientWithProducts.id,
+              productType: formValue.productType,
+              name: formValue.name,
+              balance: Number(formValue.balance)
+            };
+            if (!createRequest.productType) {
+              console.error('Invalid productType:', createRequest.productType);
               this.isLoading = false;
-              this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
+              this.snackBar.open('Error: Tipo de producto requerido', 'Cerrar', { duration: 5000 });
               return;
             }
-          } catch (error) {
+            this.productService.createProduct(createRequest).subscribe({
+              next: (product) => {
+                this.isLoading = false;
+                this.snackBar.open('Producto creado exitosamente', 'Cerrar', { duration: 3000 });
+                this.dialogRef.close(true);
+              },
+              error: (error) => {
+                this.isLoading = false;
+                console.error('Error creating product:', error);
+                this.snackBar.open('Error al crear el producto. Verifique los datos.', 'Cerrar', { duration: 5000 });
+              }
+            });
+          } else {
             this.isLoading = false;
             this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
             return;
           }
-        }
-        const createRequest: CreateProductRequest = {
-          clientId,
-          productType: formValue.productType,
-          name: formValue.name,
-          balance: Number(formValue.balance)
-        };
-        if (!createRequest.clientId || createRequest.clientId <= 0) {
-          console.error('Invalid clientId:', createRequest.clientId);
+        } catch (error) {
           this.isLoading = false;
-          this.snackBar.open('Error: ID de cliente inválido', 'Cerrar', { duration: 5000 });
+          this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
           return;
         }
-        if (!createRequest.productType) {
-          console.error('Invalid productType:', createRequest.productType);
-          this.isLoading = false;
-          this.snackBar.open('Error: Tipo de producto requerido', 'Cerrar', { duration: 5000 });
-          return;
-        }
-        this.productService.createProduct(createRequest).subscribe({
-          next: (product) => {
-            this.isLoading = false;
-            this.snackBar.open('Producto creado exitosamente', 'Cerrar', { duration: 3000 });
-            this.dialogRef.close(true);
-          },
-          error: (error) => {
-            this.isLoading = false;
-            console.error('Error creating product:', error);
-            this.snackBar.open('Error al crear el producto. Verifique los datos.', 'Cerrar', { duration: 5000 });
-          }
-        });
       }
     } else {
       console.log('Form is invalid:', this.productForm.errors);
