@@ -376,6 +376,7 @@ export class ClientListComponent implements OnInit {
     
     console.log('Found client:', client);
     console.log('Client ID:', client.id);
+    console.log('Client uniqueCode (encrypted):', client.uniqueCode);
     
     if (!client.id || client.id <= 0) {
       console.error('Invalid client ID:', client.id);
