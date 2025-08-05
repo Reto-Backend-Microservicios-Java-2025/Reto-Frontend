@@ -26,10 +26,10 @@
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Tipo de Producto</mat-label>
           <mat-select formControlName="productType" required class="form-select">
-            <mat-option value="SAVINGS">Ahorro</mat-option>
-            <mat-option value="CHECKING">Corriente</mat-option>
-            <mat-option value="CREDIT">Crédito</mat-option>
-            <mat-option value="INVESTMENT">Inversión</mat-option>
+            <mat-option value="SAVINGS_ACCOUNT">Ahorro</mat-option>
+            <mat-option value="CHECKING_ACCOUNT">Corriente</mat-option>
+            <mat-option value="CREDIT_CARD">Crédito</mat-option>
+            <mat-option value="INVESTMENT_ACCOUNT">Inversión</mat-option>
           </mat-select>
           <mat-icon matSuffix class="field-icon">category</mat-icon>
           <mat-error *ngIf="productForm.get('productType')?.hasError('required')" class="error-text">
