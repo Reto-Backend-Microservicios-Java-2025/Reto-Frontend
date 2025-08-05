@@ -32,14 +32,58 @@ import { SignInRequest } from '../../../shared/models/user.model';
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
       padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+      pointer-events: none;
     }
 
     .auth-card {
       width: 100%;
       max-width: 400px;
-      padding: 20px;
+      background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 100%);
+      border: 2px solid #00ff88;
+      border-radius: 16px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(0, 255, 136, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #00ff88, #00cc6a, #00ff88);
+      border-radius: 16px;
+      z-index: -1;
+      opacity: 0.3;
+      animation: borderGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes borderGlow {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.6; }
     }
 
     .full-width {
@@ -50,52 +94,138 @@ import { SignInRequest } from '../../../shared/models/user.model';
     .submit-button {
       height: 48px;
       margin-top: 16px;
+      background: linear-gradient(45deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .submit-button:hover:not(:disabled) {
+      background: linear-gradient(45deg, #00cc6a 0%, #00ff88 100%);
+      box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .submit-button:disabled {
+      background: #333;
+      color: #666;
+      box-shadow: none;
     }
 
     .text-center {
       text-align: center;
       margin: 16px 0 0 0;
+      color: #ffffff;
     }
 
     .link {
-      color: #667eea;
+      color: #00ff88;
       cursor: pointer;
       text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
     }
 
     .link:hover {
+      color: #00cc6a;
       text-decoration: underline;
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
     }
 
     mat-card-header {
       margin-bottom: 20px;
+      text-align: center;
+    }
+
+    mat-card-title {
+      color: #00ff88;
+      font-size: 1.8rem;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+      margin-bottom: 8px;
+    }
+
+    mat-card-subtitle {
+      color: #cccccc;
+      font-size: 1rem;
     }
 
     /* Material Form Field Customization for Auth */
-    ::ng-deep .mat-form-field .mat-form-field-infix {
-      background-color: #ffffff !important;
-      border-radius: 4px;
-      padding: 8px 12px;
+    ::ng-deep .mat-form-field {
+      color: #ffffff;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-outline {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-outline-thick {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-label {
+      color: #cccccc;
+    }
+
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+      color: #00ff88;
     }
 
     ::ng-deep .mat-form-field input.mat-input-element {
-      color: #333333 !important;
-      background-color: #ffffff !important;
+      color: #ffffff !important;
+      background-color: transparent !important;
     }
 
     ::ng-deep .mat-form-field textarea.mat-input-element {
-      color: #333333 !important;
-      background-color: #ffffff !important;
+      color: #ffffff !important;
+      background-color: transparent !important;
     }
 
     ::ng-deep .mat-input-element {
-      color: #333333 !important;
-      background-color: #ffffff !important;
+      color: #ffffff !important;
+      background-color: transparent !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-infix {
+      background-color: rgba(0, 255, 136, 0.05) !important;
+      border-radius: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(0, 255, 136, 0.2);
     }
 
     ::ng-deep .mat-form-field .mat-form-field-infix input {
-      color: #333333 !important;
-      background-color: #ffffff !important;
+      color: #ffffff !important;
+      background-color: transparent !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-icon {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-outline-start,
+    ::ng-deep .mat-form-field .mat-form-field-outline-gap,
+    ::ng-deep .mat-form-field .mat-form-field-outline-end {
+      border-color: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-outline-thick {
+      border-color: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-outline-thick {
+      border-color: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-error {
+      color: #ff6b6b;
+    }
+
+    /* Spinner customization */
+    ::ng-deep .mat-spinner circle {
+      stroke: #00ff88 !important;
     }
 
     ::ng-deep .mat-form-field input::placeholder {
