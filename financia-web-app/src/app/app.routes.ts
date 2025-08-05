@@ -31,11 +31,6 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
-    path: 'clients/ingresar-codigo',
-    loadComponent: () => import('./features/clients/components/client-unique-code-input.component').then(m => m.ClientUniqueCodeInputComponent),
-    canActivate: [AuthGuard]
-  },
-  {
     path: 'clients/:encryptedCode',
     loadComponent: () => import('./features/clients/components/client-details.component').then(m => m.ClientDetailsComponent),
     canActivate: [AuthGuard]
