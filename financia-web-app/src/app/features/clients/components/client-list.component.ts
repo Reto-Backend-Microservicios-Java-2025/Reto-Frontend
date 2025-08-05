@@ -284,8 +284,8 @@ export class ClientListComponent implements OnInit {
   }
 
   viewClientDetails(uniqueCode: string): void {
-    // Navegar a la pantalla de input de UniqueCode
-    this.router.navigate(['/clients/ingresar-codigo']);
+    // Navegar a la pantalla de input de UniqueCode, pasando el uniqueCode esperado como query param
+    this.router.navigate(['/clients/ingresar-codigo'], { queryParams: { uniqueCode } });
   }
 
   viewClientProducts(uniqueCode: string): void {
