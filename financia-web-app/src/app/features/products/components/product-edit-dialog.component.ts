@@ -247,14 +247,19 @@ export class ProductEditDialogComponent implements OnInit {
           return;
         }
         try {
+          console.log('Selected client:', selectedClient);
+          console.log('Using uniqueCode:', selectedClient.uniqueCode);
           const clientWithProducts = await this.clientService.getClientByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
+          console.log('Client with products response:', clientWithProducts);
           if (clientWithProducts && typeof clientWithProducts.id === 'number' && clientWithProducts.id > 0) {
+            console.log('Valid clientId obtained:', clientWithProducts.id);
             const createRequest: CreateProductRequest = {
               clientId: clientWithProducts.id,
               productType: formValue.productType,
               name: formValue.name,
               balance: Number(formValue.balance)
             };
+            console.log('Create request:', createRequest);
             if (!createRequest.productType) {
               console.error('Invalid productType:', createRequest.productType);
               this.isLoading = false;
@@ -274,13 +279,15 @@ export class ProductEditDialogComponent implements OnInit {
               }
             });
           } else {
+            console.error('Invalid client response:', clientWithProducts);
             this.isLoading = false;
-            this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
+            this.snackBar.open('No se pudo obtener el ID real del cliente. Verifique que el código encriptado sea válido.', 'Cerrar', { duration: 5000 });
             return;
           }
         } catch (error) {
+          console.error('Error getting client by encrypted code:', error);
           this.isLoading = false;
-          this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
+          this.snackBar.open('Error al obtener el cliente. El código encriptado puede ser inválido.', 'Cerrar', { duration: 5000 });
           return;
         }
       }
