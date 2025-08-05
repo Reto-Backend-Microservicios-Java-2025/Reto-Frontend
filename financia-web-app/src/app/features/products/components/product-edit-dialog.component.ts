@@ -180,7 +180,7 @@ export class ProductEditDialogComponent implements OnInit {
     });
   }
 
-  onSave(): void {
+  async onSave(): Promise<void> {
     if (this.productForm.valid) {
       this.isLoading = true;
 
@@ -208,33 +208,39 @@ export class ProductEditDialogComponent implements OnInit {
       } else {
         // Create new product
         const formValue = this.productForm.value;
-        
+        let clientId = Number(formValue.clientId);
+        if (isNaN(clientId) || !clientId || clientId <= 0) {
+          // Buscar el id real usando el uniqueCode encriptado
+          const selectedClient = this.clients.find(c => String(c.id) === formValue.clientId || String(c.uniqueCode) === formValue.clientId);
+          if (selectedClient) {
+            try {
+              const clientWithProducts = await this.clientService.getClientByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
+              clientId = clientWithProducts?.id;
+            } catch (error) {
+              this.isLoading = false;
+              this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
+              return;
+            }
+          }
+        }
         const createRequest: CreateProductRequest = {
-          clientId: Number(formValue.clientId), // This should now be the actual client ID
+          clientId,
           productType: formValue.productType,
           name: formValue.name,
           balance: Number(formValue.balance)
         };
-
-        // Validate the request before sending
         if (!createRequest.clientId || createRequest.clientId <= 0) {
           console.error('Invalid clientId:', createRequest.clientId);
           this.isLoading = false;
           this.snackBar.open('Error: ID de cliente inválido', 'Cerrar', { duration: 5000 });
           return;
         }
-
         if (!createRequest.productType) {
           console.error('Invalid productType:', createRequest.productType);
           this.isLoading = false;
           this.snackBar.open('Error: Tipo de producto requerido', 'Cerrar', { duration: 5000 });
           return;
         }
-
-        console.log('Create request:', createRequest);
-        console.log('Form value:', formValue);
-        console.log('Selected client:', this.clients.find(c => c.id === createRequest.clientId));
-
         this.productService.createProduct(createRequest).subscribe({
           next: (product) => {
             this.isLoading = false;
