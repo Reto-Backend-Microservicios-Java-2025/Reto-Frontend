@@ -284,9 +284,8 @@ export class ClientListComponent implements OnInit {
   }
 
   viewClientDetails(uniqueCode: string): void {
-    // Navigate to client details using encrypted code
-    const encryptedCode = this.encryptUniqueCode(uniqueCode);
-    this.router.navigate(['/clients', encryptedCode]);
+    // Navegar a la pantalla de input de UniqueCode
+    this.router.navigate(['/clients/ingresar-codigo']);
   }
 
   viewClientProducts(uniqueCode: string): void {

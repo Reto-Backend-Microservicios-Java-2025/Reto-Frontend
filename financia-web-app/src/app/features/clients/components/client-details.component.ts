@@ -74,15 +74,6 @@ import { User } from '../../../shared/models/user.model';
             </button>
           </mat-menu>
         </mat-toolbar>
-        <div class="code-input-container">
-          <mat-form-field appearance="outline">
-            <mat-label>Ingresar UniqueCode</mat-label>
-            <input matInput [(ngModel)]="inputUniqueCode" type="number" placeholder="Ej: 967578303">
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="goToEncryptedDetails()">
-            Ver Detalles
-          </button>
-        </div>
 
         <div class="content">
           <div *ngIf="isLoading" class="loading-container">
@@ -364,7 +355,6 @@ export class ClientDetailsComponent implements OnInit {
   isLoading = false;
   currentUser: User | null = null;
   encryptedCode: string = '';
-  inputUniqueCode: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -422,12 +412,5 @@ export class ClientDetailsComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/auth/sign-in']);
-  }
-
-  goToEncryptedDetails(): void {
-    if (this.inputUniqueCode) {
-      const encrypted = this.clientService.encryptUniqueCode(Number(this.inputUniqueCode));
-      this.router.navigate(['/clients', encrypted]);
-    }
   }
 }
