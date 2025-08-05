@@ -226,6 +226,38 @@ export interface ProductDialogData {
       color: #00ff88;
     }
 
+    ::ng-deep .mat-form-field input.mat-input-element {
+      color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field textarea.mat-input-element {
+      color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-input-element {
+      color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-infix input {
+      color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field input::placeholder {
+      color: #b0b0b0 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-webkit-input-placeholder {
+      color: #b0b0b0 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-moz-placeholder {
+      color: #b0b0b0 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-ms-input-placeholder {
+      color: #b0b0b0 !important;
+    }
+
     @media (max-width: 600px) {
       .dialog-header {
         padding: 16px 20px;
