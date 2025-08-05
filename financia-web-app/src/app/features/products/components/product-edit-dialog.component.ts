@@ -241,24 +241,21 @@ export class ProductEditDialogComponent implements OnInit {
         // Create new product
         const formValue = this.productForm.value;
         let clientId = Number(formValue.clientId);
-        if (isNaN(clientId) || !clientId || clientId <= 0) {
-          // Buscar el id real usando el uniqueCode encriptado
-          const selectedClient = this.clients.find(c => String(c.id) === formValue.clientId || String(c.uniqueCode) === formValue.clientId);
-          if (selectedClient) {
-            try {
-              const maybeId = await this.clientService.getClientIdByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
-              if (typeof maybeId === 'number' && maybeId > 0) {
-                clientId = maybeId;
-              } else {
-                this.isLoading = false;
-                this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
-                return;
-              }
-            } catch (error) {
+        let selectedClient = this.clients.find(c => String(c.id) === formValue.clientId || String(c.uniqueCode) === formValue.clientId);
+        if (selectedClient) {
+          try {
+            const clientWithProducts = await this.clientService.getClientByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
+            if (clientWithProducts && typeof clientWithProducts.id === 'number' && clientWithProducts.id > 0) {
+              clientId = clientWithProducts.id;
+            } else {
               this.isLoading = false;
               this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
               return;
             }
+          } catch (error) {
+            this.isLoading = false;
+            this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
+            return;
           }
         }
         const createRequest: CreateProductRequest = {
