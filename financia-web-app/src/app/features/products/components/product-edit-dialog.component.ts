@@ -216,6 +216,11 @@ export class ProductEditDialogComponent implements OnInit {
             try {
               const clientWithProducts = await this.clientService.getClientByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
               clientId = clientWithProducts?.id;
+              if (!clientId) {
+                this.isLoading = false;
+                this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
+                return;
+              }
             } catch (error) {
               this.isLoading = false;
               this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });
