@@ -334,11 +334,14 @@ export class ProductEditDialogComponent implements OnInit {
     }
 
     if (this.data.isEdit && this.data.product) {
+      console.log('Initializing form for edit with product:', this.data.product);
       this.productForm.patchValue({
         name: this.data.product.name,
         productType: this.data.product.productType,
         balance: this.data.product.balance
       });
+      console.log('Form after patchValue:', this.productForm.value);
+      console.log('Form valid after patchValue:', this.productForm.valid);
     }
   }
 
@@ -368,6 +371,8 @@ export class ProductEditDialogComponent implements OnInit {
         };
 
         console.log('Update request:', updateRequest);
+        console.log('Product ID:', this.data.product.id);
+        console.log('Form values:', this.productForm.value);
         this.productService.updateProduct(this.data.product.id, updateRequest).subscribe({
           next: (product) => {
             this.isLoading = false;
@@ -377,7 +382,12 @@ export class ProductEditDialogComponent implements OnInit {
           error: (error) => {
             this.isLoading = false;
             console.error('Error updating product:', error);
-            this.snackBar.open('Error al actualizar el producto', 'Cerrar', { duration: 5000 });
+            console.error('Error details:', {
+              status: error.status,
+              message: error.message,
+              error: error.error
+            });
+            this.snackBar.open(`Error al actualizar el producto: ${error.status} - ${error.message}`, 'Cerrar', { duration: 5000 });
           }
         });
       } else {
@@ -443,8 +453,12 @@ export class ProductEditDialogComponent implements OnInit {
       console.log('Form controls:', Object.keys(this.productForm.controls).map(key => ({
         key,
         value: this.productForm.get(key)?.value,
-        errors: this.productForm.get(key)?.errors
+        errors: this.productForm.get(key)?.errors,
+        valid: this.productForm.get(key)?.valid
       })));
+      console.log('Form valid:', this.productForm.valid);
+      console.log('Form dirty:', this.productForm.dirty);
+      console.log('Form touched:', this.productForm.touched);
     }
   }
 
