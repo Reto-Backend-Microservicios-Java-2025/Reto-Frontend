@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   apiUrl: 'http://localhost:8010',
   endpoints: {
     auth: '/iam-service/api/v1/users',

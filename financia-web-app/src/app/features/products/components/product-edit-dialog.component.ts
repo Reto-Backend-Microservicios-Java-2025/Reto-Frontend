@@ -1,0 +1,223 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { ProductService } from '../services/product.service';
+import { ClientService } from '../../clients/services/client.service';
+import { Product, CreateProductRequest, UpdateProductRequest } from '../../../shared/models/product.model';
+import { Client } from '../../../shared/models/client.model';
+
+export interface ProductDialogData {
+  product: Product | null;
+  isEdit: boolean;
+}
+
+@Component({
+  selector: 'app-product-edit-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSelectModule
+  ],
+  template: `
+    <h2 mat-dialog-title>
+      <mat-icon>{{ data.isEdit ? 'edit' : 'add' }}</mat-icon>
+      {{ data.isEdit ? 'Editar Producto' : 'Crear Producto' }}
+    </h2>
+
+    <mat-dialog-content>
+      <form [formGroup]="productForm">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre del Producto</mat-label>
+          <input matInput formControlName="name" required>
+          <mat-icon matSuffix>inventory</mat-icon>
+          <mat-error *ngIf="productForm.get('name')?.hasError('required')">
+            El nombre es requerido
+          </mat-error>
+          <mat-error *ngIf="productForm.get('name')?.hasError('minlength')">
+            El nombre debe tener al menos 3 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput formControlName="description" rows="3" required></textarea>
+          <mat-icon matSuffix>description</mat-icon>
+          <mat-error *ngIf="productForm.get('description')?.hasError('required')">
+            La descripción es requerida
+          </mat-error>
+          <mat-error *ngIf="productForm.get('description')?.hasError('minlength')">
+            La descripción debe tener al menos 10 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Precio</mat-label>
+          <input matInput type="number" formControlName="price" step="0.01" min="0" required>
+          <span matTextPrefix>$&nbsp;</span>
+          <mat-error *ngIf="productForm.get('price')?.hasError('required')">
+            El precio es requerido
+          </mat-error>
+          <mat-error *ngIf="productForm.get('price')?.hasError('min')">
+            El precio debe ser mayor a 0
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cliente</mat-label>
+          <mat-select formControlName="clientId" required>
+            <mat-option *ngFor="let client of clients" [value]="client.id">
+              {{ client.fullName }} {{ client.fullLastName }} ({{ client.documentNumber }})
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="productForm.get('clientId')?.hasError('required')">
+            Seleccione un cliente
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Cancelar</button>
+      <button mat-raised-button color="primary" 
+              [disabled]="productForm.invalid || isLoading"
+              (click)="onSave()">
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+        <span *ngIf="!isLoading">{{ data.isEdit ? 'Actualizar' : 'Crear' }}</span>
+      </button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .full-width {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    mat-dialog-content {
+      min-width: 500px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    mat-dialog-actions {
+      padding: 16px 0;
+    }
+
+    @media (max-width: 768px) {
+      mat-dialog-content {
+        min-width: 300px;
+      }
+    }
+  `]
+})
+export class ProductEditDialogComponent implements OnInit {
+  productForm: FormGroup;
+  isLoading = false;
+  clients: Client[] = [];
+
+  constructor(
+    private fb: FormBuilder,
+    private productService: ProductService,
+    private clientService: ClientService,
+    private snackBar: MatSnackBar,
+    public dialogRef: MatDialogRef<ProductEditDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ProductDialogData
+  ) {
+    this.productForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.minLength(10)]],
+      price: [0, [Validators.required, Validators.min(0.01)]],
+      clientId: ['', [Validators.required]]
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadClients();
+    
+    if (this.data.isEdit && this.data.product) {
+      this.productForm.patchValue({
+        name: this.data.product.name,
+        description: this.data.product.description,
+        price: this.data.product.price,
+        clientId: this.data.product.clientId
+      });
+    }
+  }
+
+  loadClients(): void {
+    this.clientService.getAllClients().subscribe({
+      next: (clients) => {
+        this.clients = clients;
+      },
+      error: (error) => {
+        this.snackBar.open('Error al cargar los clientes', 'Cerrar', { duration: 5000 });
+      }
+    });
+  }
+
+  onSave(): void {
+    if (this.productForm.valid) {
+      this.isLoading = true;
+
+      if (this.data.isEdit && this.data.product) {
+        // Update existing product
+        const updateRequest: UpdateProductRequest = {
+          name: this.productForm.value.name,
+          description: this.productForm.value.description,
+          price: this.productForm.value.price
+        };
+
+        this.productService.updateProduct(this.data.product.id, updateRequest).subscribe({
+          next: (product) => {
+            this.isLoading = false;
+            this.snackBar.open('Producto actualizado exitosamente', 'Cerrar', { duration: 3000 });
+            this.dialogRef.close(true);
+          },
+          error: (error) => {
+            this.isLoading = false;
+            this.snackBar.open('Error al actualizar el producto', 'Cerrar', { duration: 5000 });
+          }
+        });
+      } else {
+        // Create new product
+        const createRequest: CreateProductRequest = this.productForm.value;
+
+        this.productService.createProduct(createRequest).subscribe({
+          next: (product) => {
+            this.isLoading = false;
+            this.snackBar.open('Producto creado exitosamente', 'Cerrar', { duration: 3000 });
+            this.dialogRef.close(true);
+          },
+          error: (error) => {
+            this.isLoading = false;
+            this.snackBar.open('Error al crear el producto', 'Cerrar', { duration: 5000 });
+          }
+        });
+      }
+    }
+  }
+
+  onCancel(): void {
+    this.dialogRef.close(false);
+  }
+}
