@@ -285,11 +285,31 @@ export class ClientListComponent implements OnInit {
 
   viewClientDetails(uniqueCode: string): void {
     // Navigate to client details using encrypted code
-    this.router.navigate(['/clients', uniqueCode]);
+    const encryptedCode = this.encryptUniqueCode(uniqueCode);
+    this.router.navigate(['/clients', encryptedCode]);
   }
 
   viewClientProducts(uniqueCode: string): void {
-    this.router.navigate(['/products'], { queryParams: { uniqueCode } });
+    // For products, we need the actual client ID, not uniqueCode
+    // We'll need to get the client details first to get the ID
+    const encryptedCode = this.encryptUniqueCode(uniqueCode);
+    
+    // Get client details to get the actual ID
+    this.clientService.getClientByEncryptedCode(encryptedCode).subscribe({
+      next: (client) => {
+        this.router.navigate(['/products'], { queryParams: { clientId: client.id } });
+      },
+      error: (error) => {
+        console.error('Error getting client details:', error);
+        this.snackBar.open('Error al obtener detalles del cliente', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  private encryptUniqueCode(uniqueCode: string | number): string {
+    // Simple encryption - in production, this should match your backend encryption
+    // For now, we'll just convert to string
+    return typeof uniqueCode === 'string' ? uniqueCode : uniqueCode.toString();
   }
 
   navigateTo(route: string): void {

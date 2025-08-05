@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ProductService } from '../services/product.service';
 import { ClientService } from '../../clients/services/client.service';
 import { Product, CreateProductRequest, UpdateProductRequest } from '../../../shared/models/product.model';
-import { Client } from '../../../shared/models/client.model';
+import { ClientForProductSelection } from '../../../shared/models/client.model';
 
 export interface ProductDialogData {
   product: Product | null;
@@ -82,8 +82,8 @@ export interface ProductDialogData {
         <mat-form-field appearance="outline" class="full-width" *ngIf="!data.isEdit">
           <mat-label>Cliente</mat-label>
           <mat-select formControlName="clientId" required>
-            <mat-option *ngFor="let client of clients" [value]="client.uniqueCode">
-              {{ client.full_name }} {{ client.full_last_name }} ({{ client.number_document }}) - Código: {{ client.uniqueCode }}
+            <mat-option *ngFor="let client of clients" [value]="client.id">
+              {{ client.full_name }} {{ client.full_last_name }} ({{ client.number_document }}) - ID: {{ client.id }}
             </mat-option>
           </mat-select>
           <mat-error *ngIf="productForm.get('clientId')?.hasError('required')">
@@ -135,7 +135,7 @@ export interface ProductDialogData {
 export class ProductEditDialogComponent implements OnInit {
   productForm: FormGroup;
   isLoading = false;
-  clients: Client[] = [];
+  clients: ClientForProductSelection[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -168,11 +168,13 @@ export class ProductEditDialogComponent implements OnInit {
   }
 
   loadClients(): void {
-    this.clientService.getAllClients().subscribe({
+    this.clientService.getAllClientsWithIds().subscribe({
       next: (clients) => {
         this.clients = clients;
+        console.log('Loaded clients for product creation:', clients);
       },
       error: (error) => {
+        console.error('Error loading clients:', error);
         this.snackBar.open('Error al cargar los clientes', 'Cerrar', { duration: 5000 });
       }
     });
@@ -207,12 +209,8 @@ export class ProductEditDialogComponent implements OnInit {
         // Create new product
         const formValue = this.productForm.value;
         
-        // Convert clientId to number - uniqueCode from client selection
-        const clientId = typeof formValue.clientId === 'string' ? 
-          parseInt(formValue.clientId, 10) : Number(formValue.clientId);
-        
         const createRequest: CreateProductRequest = {
-          clientId: clientId,
+          clientId: Number(formValue.clientId), // This should now be the actual client ID
           productType: formValue.productType,
           name: formValue.name,
           balance: Number(formValue.balance)
@@ -235,6 +233,7 @@ export class ProductEditDialogComponent implements OnInit {
 
         console.log('Create request:', createRequest);
         console.log('Form value:', formValue);
+        console.log('Selected client:', this.clients.find(c => c.id === createRequest.clientId));
 
         this.productService.createProduct(createRequest).subscribe({
           next: (product) => {

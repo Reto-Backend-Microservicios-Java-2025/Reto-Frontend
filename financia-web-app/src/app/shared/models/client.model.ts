@@ -1,18 +1,19 @@
 export interface Client {
+  id?: number; // Optional because ClientResource doesn't have id, but ClientWithProducts does
   full_name: string;
   full_last_name: string;
   type_document: string;
   number_document: string;
-  uniqueCode: string;
+  uniqueCode: string | number;
 }
 
-export interface ClientListItem {
-  id?: number; // Optional for basic client resource
+export interface ClientForProductSelection {
+  id: number; // Required for product creation
   full_name: string;
   full_last_name: string;
   type_document: string;
   number_document: string;
-  uniqueCode: string | number; // Can be string or number depending on endpoint
+  uniqueCode: number;
 }
 
 export interface CreateClientRequest {
