@@ -396,9 +396,11 @@ export class ClientListComponent implements OnInit {
     this.clientService.getClientByEncryptedCode(testEncryptedCode).subscribe({
       next: (client) => {
         console.log('✅ Client details found:', client);
+        this.snackBar.open('✅ Cliente encontrado correctamente', 'Cerrar', { duration: 3000 });
       },
       error: (error) => {
         console.error('❌ Error getting client details:', error);
+        this.snackBar.open('❌ Error al obtener detalles del cliente', 'Cerrar', { duration: 3000 });
       }
     });
   }

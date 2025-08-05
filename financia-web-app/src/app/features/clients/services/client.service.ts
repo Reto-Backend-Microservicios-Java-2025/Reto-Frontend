@@ -43,7 +43,10 @@ export class ClientService {
    * @param encryptedCode Código cifrado del cliente
    */
   getClientByEncryptedCode(encryptedCode: string): Observable<ClientWithProducts> {
-    return this.httpClient.get<ClientWithProducts>(`${this.endpoint}/${encryptedCode}`);
+    const encodedCode = encodeURIComponent(encryptedCode);
+    console.log('Original encrypted code:', encryptedCode);
+    console.log('Encoded for URL:', encodedCode);
+    return this.httpClient.get<ClientWithProducts>(`${this.endpoint}/${encodedCode}`);
   }
 
   getClientBasicByEncryptedCode(encryptedCode: string): Observable<Client> {
