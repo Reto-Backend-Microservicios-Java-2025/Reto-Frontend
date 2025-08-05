@@ -83,7 +83,7 @@ export interface ProductDialogData {
           <mat-label>Cliente</mat-label>
           <mat-select formControlName="clientId" required>
             <mat-option *ngFor="let client of clients" [value]="client.uniqueCode">
-              {{ client.full_name }} {{ client.full_last_name }} ({{ client.number_document }})
+              {{ client.full_name }} {{ client.full_last_name }} ({{ client.number_document }}) - Código: {{ client.uniqueCode }}
             </mat-option>
           </mat-select>
           <mat-error *ngIf="productForm.get('clientId')?.hasError('required')">
@@ -190,6 +190,7 @@ export class ProductEditDialogComponent implements OnInit {
           balance: this.productForm.value.balance
         };
 
+        console.log('Update request:', updateRequest);
         this.productService.updateProduct(this.data.product.id, updateRequest).subscribe({
           next: (product) => {
             this.isLoading = false;
@@ -198,12 +199,42 @@ export class ProductEditDialogComponent implements OnInit {
           },
           error: (error) => {
             this.isLoading = false;
+            console.error('Error updating product:', error);
             this.snackBar.open('Error al actualizar el producto', 'Cerrar', { duration: 5000 });
           }
         });
       } else {
         // Create new product
-        const createRequest: CreateProductRequest = this.productForm.value;
+        const formValue = this.productForm.value;
+        
+        // Convert clientId to number - uniqueCode from client selection
+        const clientId = typeof formValue.clientId === 'string' ? 
+          parseInt(formValue.clientId, 10) : Number(formValue.clientId);
+        
+        const createRequest: CreateProductRequest = {
+          clientId: clientId,
+          productType: formValue.productType,
+          name: formValue.name,
+          balance: Number(formValue.balance)
+        };
+
+        // Validate the request before sending
+        if (!createRequest.clientId || createRequest.clientId <= 0) {
+          console.error('Invalid clientId:', createRequest.clientId);
+          this.isLoading = false;
+          this.snackBar.open('Error: ID de cliente inválido', 'Cerrar', { duration: 5000 });
+          return;
+        }
+
+        if (!createRequest.productType) {
+          console.error('Invalid productType:', createRequest.productType);
+          this.isLoading = false;
+          this.snackBar.open('Error: Tipo de producto requerido', 'Cerrar', { duration: 5000 });
+          return;
+        }
+
+        console.log('Create request:', createRequest);
+        console.log('Form value:', formValue);
 
         this.productService.createProduct(createRequest).subscribe({
           next: (product) => {
@@ -213,10 +244,18 @@ export class ProductEditDialogComponent implements OnInit {
           },
           error: (error) => {
             this.isLoading = false;
-            this.snackBar.open('Error al crear el producto', 'Cerrar', { duration: 5000 });
+            console.error('Error creating product:', error);
+            this.snackBar.open('Error al crear el producto. Verifique los datos.', 'Cerrar', { duration: 5000 });
           }
         });
       }
+    } else {
+      console.log('Form is invalid:', this.productForm.errors);
+      console.log('Form controls:', Object.keys(this.productForm.controls).map(key => ({
+        key,
+        value: this.productForm.get(key)?.value,
+        errors: this.productForm.get(key)?.errors
+      })));
     }
   }
 
