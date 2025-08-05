@@ -178,57 +178,72 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
   styles: [`
     .sidenav-container {
       height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     }
-
     .sidenav {
-      width: 200px;
+      width: 220px;
+      background: #fff;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.04);
     }
-
-    .sidenav .mat-toolbar {
-      background: inherit;
-    }
-
     .mat-toolbar.mat-primary {
       position: sticky;
       top: 0;
       z-index: 1;
+      background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.08);
     }
-
     .spacer {
       flex: 1 1 auto;
     }
-
     .content {
-      padding: 20px;
+      padding: 24px 8px;
       min-height: calc(100vh - 64px);
-      background-color: #f5f5f5;
+      background: transparent;
     }
-
     .form-card {
       max-width: 600px;
       margin: 0 auto;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(33,150,243,0.10), 0 1.5px 4px rgba(0,0,0,0.04);
+      background: #fff;
+      transition: box-shadow 0.3s;
+      animation: fadeIn 0.7s;
     }
-
+    .form-card:hover {
+      box-shadow: 0 8px 32px rgba(33,150,243,0.18), 0 2px 8px rgba(0,0,0,0.08);
+    }
+    mat-card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      border-radius: 18px 18px 0 0;
+      background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+      padding: 16px 24px;
+    }
     mat-card-title {
       display: flex;
       align-items: center;
       gap: 8px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1976d2;
     }
-
+    mat-card-content {
+      padding: 24px 16px 8px 16px;
+    }
     .form-row {
       display: flex;
+      flex-wrap: wrap;
       gap: 16px;
       margin-bottom: 16px;
     }
-
     .full-width {
       width: 100%;
     }
-
     .half-width {
       width: calc(50% - 8px);
     }
-
     .form-actions {
       display: flex;
       justify-content: space-between;
@@ -237,29 +252,46 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
       padding-top: 16px;
       border-top: 1px solid #e0e0e0;
     }
-
-    .active {
-      background-color: rgba(63, 81, 181, 0.1);
-      color: #3f51b5;
+    .mat-raised-button {
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+      border-radius: 8px;
     }
-
-    @media (max-width: 768px) {
-      .content {
-        padding: 10px;
+    .mat-raised-button:hover {
+      background: #e3f2fd;
+      color: #1976d2;
+      transform: scale(1.06);
+      box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+    }
+    @media (max-width: 900px) {
+      .form-card {
+        margin: 0 4px;
       }
-      
+      .form-row {
+        gap: 8px;
+      }
+    }
+    @media (max-width: 600px) {
+      .content {
+        padding: 8px 2px;
+      }
+      .form-card {
+        margin: 0 2px;
+      }
       .form-row {
         flex-direction: column;
+        gap: 0;
       }
-      
       .half-width {
         width: 100%;
       }
-      
       .form-actions {
         flex-direction: column;
         gap: 16px;
       }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   `]
 })

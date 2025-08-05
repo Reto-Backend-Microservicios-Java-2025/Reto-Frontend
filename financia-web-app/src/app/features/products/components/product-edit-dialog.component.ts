@@ -104,31 +104,63 @@ export interface ProductDialogData {
     </mat-dialog-actions>
   `,
   styles: [`
-    .full-width {
-      width: 100%;
-      margin-bottom: 16px;
-    }
-
-    h2 {
+    h2[mat-dialog-title] {
       display: flex;
       align-items: center;
       gap: 8px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1976d2;
+      background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+      border-radius: 18px 18px 0 0;
+      padding: 16px 24px;
+      margin: -24px -24px 16px -24px;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+      animation: fadeIn 0.7s;
     }
-
     mat-dialog-content {
-      min-width: 500px;
-      max-height: 70vh;
-      overflow-y: auto;
+      padding: 24px 8px 8px 8px;
+      background: #fff;
+      border-radius: 0 0 18px 18px;
+      box-shadow: 0 4px 24px rgba(33,150,243,0.10), 0 1.5px 4px rgba(0,0,0,0.04);
+      animation: fadeIn 0.7s;
     }
-
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .full-width {
+      width: 100%;
+    }
+    .mat-raised-button {
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+      border-radius: 8px;
+    }
+    .mat-raised-button:hover {
+      background: #e3f2fd;
+      color: #1976d2;
+      transform: scale(1.06);
+      box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+    }
     mat-dialog-actions {
-      padding: 16px 0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 16px;
     }
-
-    @media (max-width: 768px) {
-      mat-dialog-content {
-        min-width: 300px;
+    @media (max-width: 600px) {
+      h2[mat-dialog-title] {
+        font-size: 1.1rem;
+        padding: 12px 8px;
       }
+      mat-dialog-content {
+        padding: 12px 2px 8px 2px;
+      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   `]
 })
