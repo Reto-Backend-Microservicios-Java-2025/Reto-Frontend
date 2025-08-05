@@ -45,10 +45,9 @@ import { SignInRequest } from '../../../shared/models/user.model';
       left: 0;
       right: 0;
       bottom: 0;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+      background: radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
       pointer-events: none;
     }
 
@@ -58,10 +57,9 @@ import { SignInRequest } from '../../../shared/models/user.model';
       background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 100%);
       border: 2px solid #00ff88;
       border-radius: 16px;
-      box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        0 0 20px rgba(0, 255, 136, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(0, 255, 136, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       position: relative;
       z-index: 1;
@@ -82,8 +80,12 @@ import { SignInRequest } from '../../../shared/models/user.model';
     }
 
     @keyframes borderGlow {
-      0% { opacity: 0.3; }
-      100% { opacity: 0.6; }
+      0% {
+        opacity: 0.3;
+      }
+      100% {
+        opacity: 0.6;
+      }
     }
 
     .full-width {
@@ -232,7 +234,7 @@ import { SignInRequest } from '../../../shared/models/user.model';
       color: #666666 !important;
     }
 
-    ::ng-deep .mat-form-field input:-webkit-input-placeholder {
+    ::ng-deep .mat-form-field input::-webkit-input-placeholder {
       color: #666666 !important;
     }
 
