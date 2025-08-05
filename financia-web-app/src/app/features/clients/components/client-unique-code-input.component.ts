@@ -28,13 +28,10 @@ import { MatIconModule } from '@angular/material/icon';
         <mat-card-content>
           <form (ngSubmit)="onSubmit()" autocomplete="off">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Ingrese UniqueCode</mat-label>
-              <input matInput [(ngModel)]="uniqueCode" name="uniqueCode" type="number" required autocomplete="off">
+              <mat-label>Ingrese UniqueCode Encriptado</mat-label>
+              <input matInput [(ngModel)]="encryptedCode" name="encryptedCode" type="text" required autocomplete="off">
             </mat-form-field>
-            <button mat-raised-button color="primary" class="full-width" [disabled]="!uniqueCode">Ver Detalles</button>
-            <div *ngIf="errorMessage" class="error-message">
-              <mat-icon color="warn">error</mat-icon> {{ errorMessage }}
-            </div>
+            <button mat-raised-button color="primary" class="full-width" [disabled]="!encryptedCode">Ver Detalles</button>
           </form>
         </mat-card-content>
       </mat-card>
@@ -78,24 +75,11 @@ import { MatIconModule } from '@angular/material/icon';
   `]
 })
 export class ClientUniqueCodeInputComponent {
-  uniqueCode: string = '';
-  errorMessage: string = '';
-  expectedUniqueCode: string = '';
-
-  constructor(private router: Router, private route: ActivatedRoute, private clientService: ClientService) {
-    this.route.queryParams.subscribe(params => {
-      this.expectedUniqueCode = params['uniqueCode'] || '';
-    });
-  }
+  encryptedCode: string = '';
+  constructor(private router: Router) {}
 
   onSubmit(): void {
-    if (!this.uniqueCode) return;
-    if (this.expectedUniqueCode && this.uniqueCode !== this.expectedUniqueCode) {
-      this.errorMessage = 'El UniqueCode ingresado no corresponde al cliente seleccionado.';
-      return;
-    }
-    this.errorMessage = '';
-    const encrypted = this.clientService.encryptUniqueCode(Number(this.uniqueCode));
-    this.router.navigate(['/clients', encrypted]);
+    if (!this.encryptedCode) return;
+    this.router.navigate(['/clients', this.encryptedCode]);
   }
 }
