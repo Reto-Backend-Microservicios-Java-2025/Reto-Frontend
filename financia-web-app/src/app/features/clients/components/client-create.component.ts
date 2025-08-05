@@ -326,15 +326,21 @@ export class ClientCreateComponent implements OnInit {
     if (this.clientForm.valid) {
       this.isLoading = true;
       const request: CreateClientRequest = this.clientForm.value;
+      
+      console.log('Creating client with request:', request);
+      console.log('uniqueCode being sent:', request.uniqueCode);
+      console.log('Type of uniqueCode:', typeof request.uniqueCode);
 
       this.clientService.createClient(request).subscribe({
         next: (client) => {
           this.isLoading = false;
+          console.log('Client created successfully:', client);
           this.snackBar.open('Cliente creado exitosamente', 'Cerrar', { duration: 3000 });
           this.router.navigate(['/clients']);
         },
         error: (error) => {
           this.isLoading = false;
+          console.error('Error creating client:', error);
           this.snackBar.open('Error al crear el cliente. Intenta nuevamente.', 'Cerrar', { duration: 5000 });
         }
       });
