@@ -155,96 +155,156 @@ import { User } from '../../../shared/models/user.model';
   styles: [`
     .sidenav-container {
       height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     }
-
     .sidenav {
-      width: 200px;
+      width: 220px;
+      background: #fff;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.04);
     }
-
-    .sidenav .mat-toolbar {
-      background: inherit;
-    }
-
     .mat-toolbar.mat-primary {
       position: sticky;
       top: 0;
       z-index: 1;
+      background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.08);
     }
-
     .spacer {
       flex: 1 1 auto;
     }
-
     .content {
-      padding: 20px;
+      padding: 24px 8px;
       min-height: calc(100vh - 64px);
-      background-color: #f5f5f5;
+      background: transparent;
     }
-
     mat-card {
       max-width: 1200px;
-      margin: 0 auto;
+      margin: 0 auto 24px auto;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(33,150,243,0.10), 0 1.5px 4px rgba(0,0,0,0.04);
+      transition: box-shadow 0.3s;
+      background: #fff;
     }
-
+    mat-card:hover {
+      box-shadow: 0 8px 32px rgba(33,150,243,0.18), 0 2px 8px rgba(0,0,0,0.08);
+    }
     mat-card-header {
       display: flex;
       align-items: center;
       margin-bottom: 20px;
+      border-radius: 18px 18px 0 0;
+      background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+      padding: 16px 24px;
     }
-
     mat-card-title {
       display: flex;
       align-items: center;
       gap: 8px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1976d2;
     }
-
     .loading-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px;
-    }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      justify-content: center;
       padding: 40px;
       text-align: center;
     }
-
+    .empty-state {
+      text-align: center;
+      color: #888;
+      padding: 40px 0;
+    }
     .empty-state mat-icon {
-      font-size: 64px;
-      width: 64px;
-      height: 64px;
-      color: #ccc;
-      margin-bottom: 16px;
+      font-size: 48px;
+      margin-bottom: 12px;
+      color: #90caf9;
     }
-
     .table-container {
-      width: 100%;
       overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.06);
+      background: #fafbfc;
+      padding: 8px 0;
+      animation: fadeIn 0.5s;
     }
-
-    table {
-      width: 100%;
+    table.mat-table {
+      min-width: 800px;
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+      animation: fadeIn 0.7s;
     }
-
-    .active {
-      background-color: rgba(63, 81, 181, 0.1);
-      color: #3f51b5;
+    th.mat-header-cell, td.mat-cell {
+      padding: 12px 16px;
+      font-size: 1rem;
+      border-bottom: 1px solid #e3e3e3;
     }
-
-    @media (max-width: 768px) {
-      .content {
-        padding: 10px;
+    th.mat-header-cell {
+      background: #e3f2fd;
+      color: #1976d2;
+      font-weight: 700;
+    }
+    td.mat-cell {
+      transition: background 0.2s;
+    }
+    tr.mat-row:hover td.mat-cell {
+      background: #e3f2fd44;
+      transition: background 0.2s;
+    }
+    .mat-icon-button {
+      transition: background 0.2s, color 0.2s;
+      border-radius: 50%;
+      margin: 0 2px;
+    }
+    .mat-icon-button:hover {
+      background: #e3f2fd;
+      color: #1976d2;
+      transform: scale(1.12);
+      box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+    }
+    .mat-icon-button[color="warn"]:hover {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+    .mat-icon-button[color="accent"]:hover {
+      background: #fce4ec;
+      color: #c2185b;
+    }
+    @media (max-width: 900px) {
+      mat-card {
+        margin: 0 4px 24px 4px;
       }
-      
+      .table-container {
+        padding: 0;
+      }
+      table.mat-table {
+        min-width: 600px;
+      }
+    }
+    @media (max-width: 600px) {
+      .content {
+        padding: 8px 2px;
+      }
       mat-card-header {
         flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
+        align-items: flex-start;
+        padding: 12px 8px;
       }
+      table.mat-table {
+        min-width: 400px;
+      }
+      th.mat-header-cell, td.mat-cell {
+        padding: 8px 6px;
+        font-size: 0.95rem;
+      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   `]
 })
