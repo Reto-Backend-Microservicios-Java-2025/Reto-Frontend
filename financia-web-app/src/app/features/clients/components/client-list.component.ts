@@ -333,6 +333,9 @@ export class ClientListComponent implements OnInit {
     this.clientService.getAllClients().subscribe({
       next: (clients) => {
         this.clients = clients;
+        console.log('Loaded clients:', clients);
+        console.log('First client uniqueCode:', clients[0]?.uniqueCode);
+        console.log('Type of first client uniqueCode:', typeof clients[0]?.uniqueCode);
         this.isLoading = false;
       },
       error: (error) => {
@@ -353,11 +356,17 @@ export class ClientListComponent implements OnInit {
   viewClientProducts(uniqueCode: string): void {
     // For products, we need the actual client ID, not uniqueCode
     // We'll need to get the client details first to get the ID
-    const encryptedCode = this.encryptUniqueCode(uniqueCode);
+    console.log('Original uniqueCode:', uniqueCode);
+    console.log('Type of uniqueCode:', typeof uniqueCode);
+    
+    // Use the uniqueCode directly as it's probably already encrypted
+    const encryptedCode = uniqueCode;
+    console.log('Using encrypted code directly:', encryptedCode);
     
     // Get client details to get the actual ID
     this.clientService.getClientByEncryptedCode(encryptedCode).subscribe({
       next: (client) => {
+        console.log('Client found:', client);
         this.router.navigate(['/products'], { queryParams: { clientId: client.id } });
       },
       error: (error) => {
