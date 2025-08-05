@@ -214,8 +214,7 @@ export class ProductEditDialogComponent implements OnInit {
           const selectedClient = this.clients.find(c => String(c.id) === formValue.clientId || String(c.uniqueCode) === formValue.clientId);
           if (selectedClient) {
             try {
-              const clientWithProducts = await this.clientService.getClientByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
-              clientId = clientWithProducts?.id;
+              clientId = await this.clientService.getClientIdByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
               if (!clientId) {
                 this.isLoading = false;
                 this.snackBar.open('No se pudo obtener el ID real del cliente', 'Cerrar', { duration: 5000 });

@@ -58,6 +58,12 @@ export class ClientService {
     return this.httpClient.delete<void>(`${this.endpoint}/${clientId}`);
   }
 
+  getClientIdByEncryptedCode(encryptedCode: string): Observable<number | undefined> {
+    return this.getClientByEncryptedCode(encryptedCode).pipe(
+      map(clientWithProducts => clientWithProducts?.id)
+    );
+  }
+
   // Utility method to encrypt uniqueCode for navigation
   encryptUniqueCode(uniqueCode: number): string {
     // AES/ECB/PKCS5Padding con clave 1234567890123456, salida Base64
