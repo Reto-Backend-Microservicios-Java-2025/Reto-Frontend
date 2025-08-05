@@ -21,7 +21,7 @@ export interface CreateClientRequest {
   full_last_name: string;
   type_document: string;
   number_document: string;
-  uniqueCode: number;
+  uniqueCode: string; // Changed from number to string for 16-character validation
 }
 
 export interface ClientWithProducts {

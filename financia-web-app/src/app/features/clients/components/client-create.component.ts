@@ -150,8 +150,11 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
                     <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('required')">
                       El código único es requerido
                     </mat-error>
-                    <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('min')">
-                      El código único debe ser mayor a 0
+                    <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('pattern')">
+                      El código único debe tener exactamente 16 dígitos numéricos
+                    </mat-error>
+                    <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('minlength') || clientForm.get('uniqueCode')?.hasError('maxlength')">
+                      El código único debe tener exactamente 16 dígitos
                     </mat-error>
                   </mat-form-field>
                 </div>
@@ -312,7 +315,7 @@ export class ClientCreateComponent implements OnInit {
       full_last_name: ['', [Validators.required, Validators.minLength(2)]],
       type_document: ['', [Validators.required]],
       number_document: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z]+$/)]],
-      uniqueCode: [null, [Validators.required, Validators.min(1)]]
+      uniqueCode: ['', [Validators.required, Validators.pattern(/^[0-9]{16}$/), Validators.minLength(16), Validators.maxLength(16)]]
     });
   }
 
