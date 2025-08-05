@@ -10,6 +10,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { ClientService } from '../services/client.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { ClientWithProducts } from '../../../shared/models/client.model';
@@ -28,7 +30,9 @@ import { User } from '../../../shared/models/user.model';
     MatSidenavModule,
     MatListModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   template: `
     <mat-sidenav-container class="sidenav-container">
@@ -68,6 +72,15 @@ import { User } from '../../../shared/models/user.model';
             </button>
           </mat-menu>
         </mat-toolbar>
+        <div class="code-input-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Ingresar UniqueCode</mat-label>
+            <input matInput [(ngModel)]="inputUniqueCode" type="number" placeholder="Ej: 967578303">
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="goToEncryptedDetails()">
+            Ver Detalles
+          </button>
+        </div>
 
         <div class="content">
           <div *ngIf="isLoading" class="loading-container">
@@ -322,6 +335,13 @@ import { User } from '../../../shared/models/user.model';
       font-size: 16px;
     }
 
+    .code-input-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0 16px 0;
+    }
+
     @media (max-width: 768px) {
       .content {
         padding: 10px;
@@ -342,6 +362,7 @@ export class ClientDetailsComponent implements OnInit {
   isLoading = false;
   currentUser: User | null = null;
   encryptedCode: string = '';
+  inputUniqueCode: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -399,5 +420,12 @@ export class ClientDetailsComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/auth/sign-in']);
+  }
+
+  goToEncryptedDetails(): void {
+    if (this.inputUniqueCode) {
+      const encrypted = this.clientService.encryptUniqueCode(Number(this.inputUniqueCode));
+      this.router.navigate(['/clients', encrypted]);
+    }
   }
 }
