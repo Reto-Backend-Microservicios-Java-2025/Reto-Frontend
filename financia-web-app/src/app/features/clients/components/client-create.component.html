@@ -1,0 +1,143 @@
+﻿<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport mode="over">
+    <mat-toolbar class="sidenav-toolbar">
+      <mat-icon class="menu-icon">menu</mat-icon>
+      <span>Menú</span>
+    </mat-toolbar>
+    <mat-nav-list class="nav-list">
+      <a mat-list-item (click)="navigateTo('/dashboard')" [class.active]="isActiveRoute('/dashboard')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/clients')" [class.active]="isActiveRoute('/clients')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">people</mat-icon>
+        <span matListItemTitle>Clientes</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/products')" [class.active]="isActiveRoute('/products')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">inventory</mat-icon>
+        <span matListItemTitle>Productos</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="main-toolbar">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()" class="menu-button">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span class="toolbar-title">Financia App - Nuevo Cliente</span>
+      <span class="spacer"></span>
+      <span *ngIf="currentUser" class="user-info">Hola, {{ currentUser.email }}</span>
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="user-menu-button">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" class="user-menu">
+        <button mat-menu-item (click)="logout()" class="menu-item">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="content">
+      <div class="header-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">person_add</mat-icon>
+          Crear Nuevo Cliente
+        </h1>
+        <p class="page-subtitle">Complete la información del cliente</p>
+      </div>
+
+      <div class="form-container">
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit()" class="client-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="full_name" required class="form-input">
+              <mat-icon matSuffix class="field-icon">person</mat-icon>
+              <mat-error *ngIf="clientForm.get('full_name')?.hasError('required')" class="error-text">
+                El nombre es requerido
+              </mat-error>
+              <mat-error *ngIf="clientForm.get('full_name')?.hasError('minlength')" class="error-text">
+                El nombre debe tener al menos 2 caracteres
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Apellido</mat-label>
+              <input matInput formControlName="full_last_name" required class="form-input">
+              <mat-icon matSuffix class="field-icon">person</mat-icon>
+              <mat-error *ngIf="clientForm.get('full_last_name')?.hasError('required')" class="error-text">
+                El apellido es requerido
+              </mat-error>
+              <mat-error *ngIf="clientForm.get('full_last_name')?.hasError('minlength')" class="error-text">
+                El apellido debe tener al menos 2 caracteres
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Tipo de Documento</mat-label>
+              <mat-select formControlName="type_document" required class="form-select">
+                <mat-option value="DNI">DNI</mat-option>
+                <mat-option value="RUC">RUC</mat-option>
+                <mat-option value="CE">CE</mat-option>
+                <mat-option value="PASSPORT">PASSPORT</mat-option>
+              </mat-select>
+              <mat-icon matSuffix class="field-icon">description</mat-icon>
+              <mat-error *ngIf="clientForm.get('type_document')?.hasError('required')" class="error-text">
+                El tipo de documento es requerido
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Número de Documento</mat-label>
+              <input matInput formControlName="number_document" required class="form-input">
+              <mat-icon matSuffix class="field-icon">numbers</mat-icon>
+              <mat-error *ngIf="clientForm.get('number_document')?.hasError('required')" class="error-text">
+                El número de documento es requerido
+              </mat-error>
+              <mat-error *ngIf="clientForm.get('number_document')?.hasError('pattern')" class="error-text">
+                Solo se permiten números y letras
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Código Único (16 dígitos)</mat-label>
+              <input matInput formControlName="uniqueCode" required class="form-input" maxlength="16">
+              <mat-icon matSuffix class="field-icon">vpn_key</mat-icon>
+              <mat-hint>Debe tener exactamente 16 dígitos numéricos</mat-hint>
+              <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('required')" class="error-text">
+                El código único es requerido
+              </mat-error>
+              <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('pattern')" class="error-text">
+                El código único debe tener exactamente 16 dígitos numéricos
+              </mat-error>
+              <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('minlength') || clientForm.get('uniqueCode')?.hasError('maxlength')" class="error-text">
+                El código único debe tener exactamente 16 dígitos
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="goBack()" class="cancel-button">
+              <mat-icon>arrow_back</mat-icon>
+              Cancelar
+            </button>
+            <button mat-raised-button color="primary" type="submit"
+                    [disabled]="clientForm.invalid || isLoading" class="submit-button">
+              <mat-spinner diameter="20" *ngIf="isLoading" class="button-spinner"></mat-spinner>
+              <mat-icon *ngIf="!isLoading" class="button-icon">save</mat-icon>
+              <span *ngIf="!isLoading" class="button-text">Crear Cliente</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

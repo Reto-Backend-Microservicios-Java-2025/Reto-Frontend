@@ -10,6 +10,9 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 import { ClientService } from '../services/client.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { ClientWithProducts } from '../../../shared/models/client.model';
@@ -28,293 +31,467 @@ import { User } from '../../../shared/models/user.model';
     MatSidenavModule,
     MatListModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule
   ],
-  template: `
-    <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav #drawer class="sidenav" fixedInViewport mode="over">
-        <mat-toolbar>Menú</mat-toolbar>
-        <mat-nav-list>
-          <a mat-list-item (click)="navigateTo('/dashboard')" [class.active]="isActiveRoute('/dashboard')">
-            <mat-icon matListItemIcon>dashboard</mat-icon>
-            <span matListItemTitle>Dashboard</span>
-          </a>
-          <a mat-list-item (click)="navigateTo('/clients')" [class.active]="isActiveRoute('/clients')">
-            <mat-icon matListItemIcon>people</mat-icon>
-            <span matListItemTitle>Clientes</span>
-          </a>
-          <a mat-list-item (click)="navigateTo('/products')" [class.active]="isActiveRoute('/products')">
-            <mat-icon matListItemIcon>inventory</mat-icon>
-            <span matListItemTitle>Productos</span>
-          </a>
-        </mat-nav-list>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <mat-toolbar color="primary">
-          <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
-            <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-          </button>
-          <span>Financia App - Detalles Cliente</span>
-          <span class="spacer"></span>
-          <span *ngIf="currentUser">Hola, {{ currentUser.email }}</span>
-          <button mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon>account_circle</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="logout()">
-              <mat-icon>logout</mat-icon>
-              <span>Cerrar Sesión</span>
-            </button>
-          </mat-menu>
-        </mat-toolbar>
-
-        <div class="content">
-          <div *ngIf="isLoading" class="loading-container">
-            <mat-spinner></mat-spinner>
-            <p>Cargando información del cliente...</p>
-          </div>
-
-          <div *ngIf="!isLoading && !client" class="error-container">
-            <mat-icon>error</mat-icon>
-            <h3>Cliente no encontrado</h3>
-            <p>No se pudo encontrar la información del cliente solicitado.</p>
-            <button mat-raised-button color="primary" (click)="goBack()">
-              <mat-icon>arrow_back</mat-icon>
-              Volver a la lista
-            </button>
-          </div>
-
-          <div *ngIf="!isLoading && client" class="client-details">
-            <!-- Client Information -->
-            <mat-card class="client-info-card">
-              <mat-card-header>
-                <div mat-card-avatar class="client-avatar">
-                  <mat-icon>person</mat-icon>
-                </div>
-                <mat-card-title>{{ client.full_name }} {{ client.full_lastName }}</mat-card-title>
-                <mat-card-subtitle>Cliente ID: {{ client.id }}</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="client-info-grid">
-                  <div class="info-item">
-                    <mat-icon>badge</mat-icon>
-                    <div>
-                      <strong>Tipo de Documento:</strong>
-                      <span>{{ client.type_document }}</span>
-                    </div>
-                  </div>
-                  <div class="info-item">
-                    <mat-icon>numbers</mat-icon>
-                    <div>
-                      <strong>Número de Documento:</strong>
-                      <span>{{ client.number_document }}</span>
-                    </div>
-                  </div>
-                  <div class="info-item">
-                    <mat-icon>fingerprint</mat-icon>
-                    <div>
-                      <strong>Código Único:</strong>
-                      <span>{{ client.uniqueCode }}</span>
-                    </div>
-                  </div>
-                </div>
-              </mat-card-content>
-              <mat-card-actions>
-                <button mat-button (click)="goBack()">
-                  <mat-icon>arrow_back</mat-icon>
-                  Volver
-                </button>
-                <button mat-raised-button color="accent" (click)="viewProducts()">
-                  <mat-icon>inventory</mat-icon>
-                  Ver Productos
-                </button>
-              </mat-card-actions>
-            </mat-card>
-
-            <!-- Products Section -->
-            <mat-card class="products-card">
-              <mat-card-header>
-                <mat-card-title>
-                  <mat-icon>inventory</mat-icon>
-                  Productos del Cliente
-                </mat-card-title>
-                <mat-card-subtitle>{{ client.products?.length || 0 }} productos encontrados</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <div *ngIf="!client.products || client.products.length === 0" class="no-products">
-                  <mat-icon>inventory_2</mat-icon>
-                  <h4>No hay productos registrados</h4>
-                  <p>Este cliente aún no tiene productos asociados.</p>
-                </div>
-
-                <div *ngIf="client.products && client.products.length > 0" class="products-grid">
-                  <mat-card *ngFor="let product of client.products" class="product-card">
-                    <mat-card-header>
-                      <mat-card-title>{{ product.name }}</mat-card-title>
-                      <mat-card-subtitle>{{ product.productType }}</mat-card-subtitle>
-                    </mat-card-header>
-                    <mat-card-content>
-                      <div class="product-balance">
-                        <mat-icon>account_balance</mat-icon>
-                        <span class="balance-amount">{{ product.balance | currency:'USD':'symbol':'1.2-2' }}</span>
-                      </div>
-                    </mat-card-content>
-                  </mat-card>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-        </div>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
-  `,
+  templateUrl: './client-details.component.html',
   styles: [`
     .sidenav-container {
       height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
     }
 
     .sidenav {
-      width: 200px;
+      width: 280px;
+      background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+      border-right: 1px solid #00ff88;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
     }
 
-    .sidenav .mat-toolbar {
-      background: inherit;
+    .sidenav-toolbar {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
     }
 
-    .mat-toolbar.mat-primary {
-      position: sticky;
-      top: 0;
-      z-index: 1;
+    .menu-icon {
+      color: #000;
+    }
+
+    .nav-list {
+      padding: 16px 0;
+    }
+
+    .nav-item {
+      margin: 4px 16px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      color: #e0e0e0;
+    }
+
+    .nav-item:hover {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+      color: #00ff88;
+      transform: translateX(8px);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+    }
+
+    .nav-icon {
+      margin-right: 12px;
+    }
+
+    .main-toolbar {
+      background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%);
+      color: #00ff88;
+      border-bottom: 2px solid #00ff88;
+      box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+    }
+
+    .menu-button {
+      color: #00ff88;
+      margin-right: 16px;
+    }
+
+    .toolbar-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .spacer {
       flex: 1 1 auto;
     }
 
-    .content {
-      padding: 20px;
-      min-height: calc(100vh - 64px);
-      background-color: #f5f5f5;
+    .user-info {
+      color: #e0e0e0;
+      margin-right: 16px;
+      font-size: 0.9rem;
     }
 
-    .loading-container, .error-container {
+    .user-menu-button {
+      color: #00ff88;
+    }
+
+    .user-menu {
+      background: #2a2a2a;
+      border: 1px solid #00ff88;
+    }
+
+    .menu-item {
+      color: #e0e0e0;
+    }
+
+    .menu-item:hover {
+      background: rgba(0, 255, 136, 0.1);
+      color: #00ff88;
+    }
+
+    .content {
+      padding: 32px 24px;
+      min-height: calc(100vh - 64px);
+      background: transparent;
+    }
+
+    .loading-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px;
-      text-align: center;
+      padding: 60px 20px;
+      color: #00ff88;
     }
 
-    .error-container mat-icon {
-      font-size: 64px;
-      width: 64px;
-      height: 64px;
-      color: #f44336;
+    .loading-spinner {
       margin-bottom: 16px;
     }
 
-    .client-details {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+    .loading-text {
+      font-size: 1.1rem;
+      color: #b0b0b0;
+      margin: 0;
     }
 
-    .client-info-card {
-      margin-bottom: 20px;
+    .error-container {
+      text-align: center;
+      padding: 60px 20px;
+      color: #b0b0b0;
+    }
+
+    .error-icon {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+      color: #ff4757;
+      margin-bottom: 16px;
+    }
+
+    .error-title {
+      font-size: 1.5rem;
+      margin: 16px 0 8px 0;
+      color: #e0e0e0;
+    }
+
+    .error-message {
+      font-size: 1rem;
+      margin: 0 0 24px 0;
+      color: #b0b0b0;
+    }
+
+    .error-button {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .client-details {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .client-info-card, .products-card {
+      background: rgba(26, 26, 26, 0.8);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 136, 0.1);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.1);
     }
 
     .client-avatar {
-      background-color: #3f51b5;
-      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-right: 16px;
+    }
+
+    .client-avatar mat-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+      color: #000;
+    }
+
+    .client-title {
+      flex: 1;
+    }
+
+    .client-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .client-subtitle {
+      font-size: 1rem;
+      color: #b0b0b0;
+      margin: 0;
     }
 
     .client-info-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 16px;
-      margin-top: 16px;
+      gap: 20px;
+      margin-bottom: 20px;
     }
 
     .info-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      background-color: #fafafa;
+      padding: 16px;
+      background: rgba(42, 42, 42, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 136, 0.1);
+      transition: all 0.3s ease;
     }
 
-    .info-item mat-icon {
-      color: #666;
+    .info-item:hover {
+      background: rgba(0, 255, 136, 0.05);
+      border-color: rgba(0, 255, 136, 0.3);
+      transform: translateY(-2px);
     }
 
-    .info-item div {
+    .info-icon {
+      color: #00ff88;
+      font-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .info-content {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
 
-    .no-products {
-      text-align: center;
-      padding: 40px;
-      color: #666;
+    .info-label {
+      font-size: 0.85rem;
+      color: #b0b0b0;
+      font-weight: 500;
     }
 
-    .no-products mat-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
+    .info-value {
+      font-size: 1rem;
+      color: #e0e0e0;
+      font-weight: 600;
+    }
+
+    .document-chip, .code-chip {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 204, 102, 0.2) 100%);
+      color: #00ff88;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .product-count {
+      color: #ff6b35;
+      font-weight: 600;
+    }
+
+    .highlight-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: linear-gradient(90deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      color: #ff6b35;
+      font-weight: 500;
+    }
+
+    .highlight-icon {
+      color: #ff6b35;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-icon {
+      color: #00ff88;
+    }
+
+    .view-products-button {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 255, 136, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .view-products-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+    }
+
+    .empty-products {
+      text-align: center;
+      padding: 40px 20px;
+      color: #b0b0b0;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      color: #666;
       margin-bottom: 16px;
+    }
+
+    .empty-products h4 {
+      font-size: 1.2rem;
+      margin: 16px 0 8px 0;
+      color: #e0e0e0;
+    }
+
+    .empty-products p {
+      font-size: 0.9rem;
+      margin: 0;
+      color: #b0b0b0;
     }
 
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 16px;
     }
 
-    .product-card {
-      border-left: 4px solid #ff4081;
+    .product-item {
+      background: rgba(42, 42, 42, 0.6);
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid rgba(0, 255, 136, 0.1);
+      transition: all 0.3s ease;
     }
 
-    .product-balance {
+    .product-item:hover {
+      background: rgba(0, 255, 136, 0.05);
+      border-color: rgba(0, 255, 136, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .product-header {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .product-icon {
+      color: #00ff88;
+    }
+
+    .product-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e0e0e0;
+    }
+
+    .product-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .product-type {
+      background: linear-gradient(90deg, rgba(255, 107, 53, 0.2) 0%, rgba(255, 107, 53, 0.1) 100%);
+      color: #ff6b35;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
       font-weight: 500;
-      color: #2e7d32;
     }
 
-    .balance-amount {
-      font-size: 24px;
-      font-weight: bold;
+    .product-balance {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #00ff88;
     }
 
-    .active {
-      background-color: rgba(63, 81, 181, 0.1);
-      color: #3f51b5;
-    }
-
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .content {
-        padding: 10px;
+        padding: 24px 16px;
       }
-      
       .client-info-grid {
         grid-template-columns: 1fr;
       }
-      
       .products-grid {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .content {
+        padding: 16px 8px;
+      }
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .client-info-grid {
+        grid-template-columns: 1fr;
+      }
+      .products-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
   `]
@@ -347,15 +524,18 @@ export class ClientDetailsComponent implements OnInit {
 
   loadClientDetails(): void {
     this.isLoading = true;
+    console.log('Loading client details for encrypted code:', this.encryptedCode);
+
     this.clientService.getClientByEncryptedCode(this.encryptedCode).subscribe({
       next: (client) => {
         this.client = client;
         this.isLoading = false;
-        console.log('Loaded client details:', client);
+        console.log('✅ Loaded client details:', client);
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Error loading client details:', error);
+        console.error('❌ Error loading client details:', error);
+        console.error('Encrypted code used:', this.encryptedCode);
       }
     });
   }

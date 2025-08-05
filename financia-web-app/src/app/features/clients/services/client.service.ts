@@ -4,6 +4,7 @@ import { HttpClientService } from '../../../core/services/http-client.service';
 import { Client, CreateClientRequest, ClientWithProducts, ClientForProductSelection } from '../../../shared/models/client.model';
 import { environment } from '../../../../environments/environment';
 import { map } from 'rxjs/operators';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
@@ -14,16 +15,27 @@ export class ClientService {
   constructor(private httpClient: HttpClientService) {}
 
   getAllClients(): Observable<Client[]> {
-    return this.httpClient.get<Client[]>(this.endpoint);
+    return this.httpClient.get<Client[]>(this.endpoint).pipe(
+      map(clients => {
+        console.log('Raw clients from backend:', clients);
+        clients.forEach((client, index) => {
+          console.log(`Client ${index + 1}:`, {
+            id: client.id,
+            name: `${client.full_name} ${client.full_last_name}`,
+            uniqueCode: client.uniqueCode
+          });
+        });
+        return clients;
+      })
+    );
   }
 
   // Get all clients with their IDs for product creation
-  // Since ClientResource doesn't have ID, we'll use uniqueCode as a temporary solution
-  // In a real implementation, you might need a different endpoint that returns clients with IDs
+  // Since ClientResource includes ID, we can use it directly
   getAllClientsWithIds(): Observable<ClientForProductSelection[]> {
     return this.httpClient.get<Client[]>(this.endpoint).pipe(
       map(clients => clients.map(client => ({
-        id: typeof client.uniqueCode === 'string' ? parseInt(client.uniqueCode, 10) : client.uniqueCode, // Use uniqueCode as ID temporarily
+        id: client.id, // Use the id directly from ClientResource
         full_name: client.full_name,
         full_last_name: client.full_last_name,
         type_document: client.type_document,
@@ -37,8 +49,15 @@ export class ClientService {
     return this.httpClient.get<ClientWithProducts>(`${this.endpoint}/id/${clientId}`);
   }
 
+  /**
+   * Obtiene un cliente y sus productos usando el código cifrado.
+   * @param encryptedCode Código cifrado del cliente
+   */
   getClientByEncryptedCode(encryptedCode: string): Observable<ClientWithProducts> {
-    return this.httpClient.get<ClientWithProducts>(`${this.endpoint}/${encryptedCode}`);
+    const encodedCode = encodeURIComponent(encryptedCode);
+    console.log('Original encrypted code:', encryptedCode);
+    console.log('Encoded for URL:', encodedCode);
+    return this.httpClient.get<ClientWithProducts>(`${this.endpoint}/${encodedCode}`);
   }
 
   getClientBasicByEncryptedCode(encryptedCode: string): Observable<Client> {
@@ -49,11 +68,25 @@ export class ClientService {
     return this.httpClient.post<Client>(this.endpoint, request);
   }
 
+  deleteClient(clientId: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.endpoint}/${clientId}`);
+  }
+
+  getClientIdByEncryptedCode(encryptedCode: string): Observable<number | undefined> {
+    return this.getClientByEncryptedCode(encryptedCode).pipe(
+      map(clientWithProducts => clientWithProducts?.id)
+    );
+  }
+
   // Utility method to encrypt uniqueCode for navigation
   encryptUniqueCode(uniqueCode: number): string {
-    // This should match your backend encryption logic
-    // For now, we'll just convert to string - you might need to implement actual encryption
-    return uniqueCode.toString();
+    // AES/ECB/PKCS5Padding con clave 1234567890123456, salida Base64
+    const key = CryptoJS.enc.Utf8.parse('1234567890123456');
+    const encrypted = CryptoJS.AES.encrypt(uniqueCode.toString(), key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    return encrypted.toString(); // Base64
   }
 
   // Utility method to decrypt encrypted code

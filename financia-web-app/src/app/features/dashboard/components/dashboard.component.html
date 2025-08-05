@@ -1,0 +1,128 @@
+﻿<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport mode="over">
+    <mat-toolbar class="sidenav-toolbar">
+      <mat-icon class="menu-icon">menu</mat-icon>
+      <span>Menú</span>
+    </mat-toolbar>
+    <mat-nav-list class="nav-list">
+      <a mat-list-item (click)="navigateTo('/dashboard')" [class.active]="isActiveRoute('/dashboard')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/clients')" [class.active]="isActiveRoute('/clients')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">people</mat-icon>
+        <span matListItemTitle>Clientes</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/products')" [class.active]="isActiveRoute('/products')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">inventory</mat-icon>
+        <span matListItemTitle>Productos</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="main-toolbar">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()" class="menu-button">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span class="toolbar-title">Financia App - Dashboard</span>
+      <span class="spacer"></span>
+      <span *ngIf="currentUser" class="user-info">Hola, {{ currentUser.email }}</span>
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="user-menu-button">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" class="user-menu">
+        <button mat-menu-item (click)="logout()" class="menu-item">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="content">
+      <div class="header-section">
+        <h1 class="page-title">
+          <mat-icon class="title-icon">dashboard</mat-icon>
+          Panel de Control
+        </h1>
+        <p class="page-subtitle">Bienvenido al sistema de gestión financiera</p>
+      </div>
+
+      <div class="dashboard-cards">
+        <div class="dashboard-card clients-card">
+          <div class="card-header">
+            <div class="card-avatar clients-avatar">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="card-title">
+              <h3>Clientes</h3>
+              <p>Gestión de clientes</p>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Administra la información de tus clientes, crea nuevos registros y consulta sus datos de manera eficiente.</p>
+          </div>
+          <div class="card-actions">
+            <button mat-raised-button color="primary" (click)="navigateTo('/clients')" class="action-button">
+              <mat-icon>visibility</mat-icon>
+              Ver Clientes
+            </button>
+          </div>
+        </div>
+
+        <div class="dashboard-card products-card">
+          <div class="card-header">
+            <div class="card-avatar products-avatar">
+              <mat-icon>inventory</mat-icon>
+            </div>
+            <div class="card-title">
+              <h3>Productos</h3>
+              <p>Gestión de productos</p>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Administra tu catálogo de productos, crea nuevos productos y actualiza la información de manera organizada.</p>
+          </div>
+          <div class="card-actions">
+            <button mat-raised-button color="accent" (click)="navigateTo('/products')" class="action-button">
+              <mat-icon>visibility</mat-icon>
+              Ver Productos
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <div class="stats-card">
+          <div class="stats-icon">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="stats-content">
+            <h4>Rendimiento</h4>
+            <p>Sistema optimizado para máxima eficiencia</p>
+          </div>
+        </div>
+
+        <div class="stats-card">
+          <div class="stats-icon">
+            <mat-icon>security</mat-icon>
+          </div>
+          <div class="stats-content">
+            <h4>Seguridad</h4>
+            <p>Datos protegidos con encriptación avanzada</p>
+          </div>
+        </div>
+
+        <div class="stats-card">
+          <div class="stats-icon">
+            <mat-icon>speed</mat-icon>
+          </div>
+          <div class="stats-content">
+            <h4>Velocidad</h4>
+            <p>Interfaz rápida y responsiva</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
