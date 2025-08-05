@@ -101,7 +101,7 @@ import { User } from '../../../shared/models/user.model';
                     <mat-icon>badge</mat-icon>
                     <div>
                       <strong>Tipo de Documento:</strong>
-                      <span>{{ client.type_document }}</span>
+                      <span><mat-chip color="primary" selected>{{ client.type_document }}</mat-chip></span>
                     </div>
                   </div>
                   <div class="info-item">
@@ -115,9 +115,13 @@ import { User } from '../../../shared/models/user.model';
                     <mat-icon>fingerprint</mat-icon>
                     <div>
                       <strong>Código Único:</strong>
-                      <span>{{ client.uniqueCode }}</span>
+                      <span><mat-chip color="accent" selected>{{ client.uniqueCode }}</mat-chip></span>
                     </div>
                   </div>
+                </div>
+                <div *ngIf="client.products?.length > 3" class="highlight-message">
+                  <mat-icon color="warn">star</mat-icon>
+                  <span>¡Este cliente tiene más de 3 productos asociados!</span>
                 </div>
               </mat-card-content>
               <mat-card-actions>
@@ -302,6 +306,20 @@ import { User } from '../../../shared/models/user.model';
     .active {
       background-color: rgba(63, 81, 181, 0.1);
       color: #3f51b5;
+    }
+
+    .highlight-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin: 16px 0 0 0;
+      font-weight: 500;
+      font-size: 16px;
     }
 
     @media (max-width: 768px) {

@@ -37,6 +37,10 @@ export class ClientService {
     return this.httpClient.get<ClientWithProducts>(`${this.endpoint}/id/${clientId}`);
   }
 
+  /**
+   * Obtiene un cliente y sus productos usando el código cifrado.
+   * @param encryptedCode Código cifrado del cliente
+   */
   getClientByEncryptedCode(encryptedCode: string): Observable<ClientWithProducts> {
     return this.httpClient.get<ClientWithProducts>(`${this.endpoint}/${encryptedCode}`);
   }
