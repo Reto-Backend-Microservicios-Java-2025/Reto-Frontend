@@ -23,14 +23,21 @@ export class ClientService {
   // In a real implementation, you might need a different endpoint that returns clients with IDs
   getAllClientsWithIds(): Observable<ClientForProductSelection[]> {
     return this.httpClient.get<Client[]>(this.endpoint).pipe(
-      map(clients => clients.map(client => ({
-        id: client.id ?? (typeof client.uniqueCode === 'string' ? parseInt(client.uniqueCode, 10) : client.uniqueCode),
-        full_name: client.full_name,
-        full_last_name: client.full_last_name,
-        type_document: client.type_document,
-        number_document: client.number_document,
-        uniqueCode: typeof client.uniqueCode === 'string' ? parseInt(client.uniqueCode, 10) : client.uniqueCode
-      })))
+      map(clients => clients.map(client => {
+        let id = client.id;
+        if (id === undefined || isNaN(Number(id))) {
+          // fallback: intentar obtener el id usando el uniqueCode encriptado (sincrónico, solo para marcar -1 si no se puede)
+          id = -1;
+        }
+        return {
+          id,
+          full_name: client.full_name,
+          full_last_name: client.full_last_name,
+          type_document: client.type_document,
+          number_document: client.number_document,
+          uniqueCode: typeof client.uniqueCode === 'string' ? parseInt(client.uniqueCode, 10) : client.uniqueCode
+        };
+      }))
     );
   }
 
