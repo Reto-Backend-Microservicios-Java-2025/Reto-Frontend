@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { ClientService } from '../services/client.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-client-unique-code-input',
@@ -17,7 +18,8 @@ import { ClientService } from '../services/client.service';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
+    MatIconModule
   ],
   template: `
     <div class="center-container">
