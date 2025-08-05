@@ -25,73 +25,7 @@ import { SignUpRequest } from '../../../shared/models/user.model';
     MatIconModule,
     MatProgressSpinnerModule
   ],
-  template: `
-    <div class="auth-container">
-      <mat-card class="auth-card">
-        <mat-card-header>
-          <mat-card-title>Crear Cuenta</mat-card-title>
-          <mat-card-subtitle>Regístrate para comenzar</mat-card-subtitle>
-        </mat-card-header>
-        
-        <mat-card-content>
-          <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email" required>
-              <mat-icon matSuffix>email</mat-icon>
-              <mat-error *ngIf="signUpForm.get('email')?.hasError('required')">
-                El email es requerido
-              </mat-error>
-              <mat-error *ngIf="signUpForm.get('email')?.hasError('email')">
-                Ingresa un email válido
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Contraseña</mat-label>
-              <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required>
-              <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
-                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-              </button>
-              <mat-error *ngIf="signUpForm.get('password')?.hasError('required')">
-                La contraseña es requerida
-              </mat-error>
-              <mat-error *ngIf="signUpForm.get('password')?.hasError('minlength')">
-                La contraseña debe tener al menos 8 caracteres
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Confirmar Contraseña</mat-label>
-              <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" required>
-              <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
-                <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-              </button>
-              <mat-error *ngIf="signUpForm.get('confirmPassword')?.hasError('required')">
-                Confirma tu contraseña
-              </mat-error>
-              <mat-error *ngIf="signUpForm.hasError('passwordMismatch')">
-                Las contraseñas no coinciden
-              </mat-error>
-            </mat-form-field>
-
-            <button mat-raised-button color="primary" type="submit" 
-                    [disabled]="signUpForm.invalid || isLoading" class="full-width submit-button">
-              <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
-              <span *ngIf="!isLoading">Crear Cuenta</span>
-            </button>
-          </form>
-        </mat-card-content>
-
-        <mat-card-actions>
-          <p class="text-center">
-            ¿Ya tienes una cuenta? 
-            <a (click)="navigateToSignIn()" class="link">Inicia sesión aquí</a>
-          </p>
-        </mat-card-actions>
-      </mat-card>
-    </div>
-  `,
+  templateUrl: './sign-up.component.html',
   styles: [`
     .auth-container {
       display: flex;
@@ -160,7 +94,7 @@ export class SignUpComponent {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('confirmPassword');
-    
+
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       return { passwordMismatch: true };
     }

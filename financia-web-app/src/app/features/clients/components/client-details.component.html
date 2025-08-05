@@ -1,0 +1,146 @@
+﻿<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport mode="over">
+    <mat-toolbar class="sidenav-toolbar">
+      <mat-icon class="menu-icon">menu</mat-icon>
+      <span>Menú</span>
+    </mat-toolbar>
+    <mat-nav-list class="nav-list">
+      <a mat-list-item (click)="navigateTo('/dashboard')" [class.active]="isActiveRoute('/dashboard')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/clients')" [class.active]="isActiveRoute('/clients')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">people</mat-icon>
+        <span matListItemTitle>Clientes</span>
+      </a>
+      <a mat-list-item (click)="navigateTo('/products')" [class.active]="isActiveRoute('/products')" class="nav-item">
+        <mat-icon matListItemIcon class="nav-icon">inventory</mat-icon>
+        <span matListItemTitle>Productos</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="main-toolbar">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()" class="menu-button">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span class="toolbar-title">Financia App - Detalles Cliente</span>
+      <span class="spacer"></span>
+      <span *ngIf="currentUser" class="user-info">Hola, {{ currentUser.email }}</span>
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="user-menu-button">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu" class="user-menu">
+        <button mat-menu-item (click)="logout()" class="menu-item">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <div class="content">
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner class="loading-spinner"></mat-spinner>
+        <p class="loading-text">Cargando información del cliente...</p>
+      </div>
+
+      <div *ngIf="!isLoading && !client" class="error-container">
+        <mat-icon class="error-icon">error</mat-icon>
+        <h3 class="error-title">Cliente no encontrado</h3>
+        <p class="error-message">No se pudo encontrar la información del cliente solicitado.</p>
+        <button mat-raised-button color="primary" (click)="goBack()" class="error-button">
+          <mat-icon>arrow_back</mat-icon>
+          Volver a la lista
+        </button>
+      </div>
+
+      <div *ngIf="!isLoading && client" class="client-details">
+        <!-- Client Information -->
+        <div class="client-info-card">
+          <div class="card-header">
+            <div class="client-avatar">
+              <mat-icon>person</mat-icon>
+            </div>
+            <div class="client-title">
+              <h2 class="client-name">{{ client.full_name }} {{ client.full_lastName }}</h2>
+              <p class="client-subtitle">Información del Cliente</p>
+            </div>
+          </div>
+
+          <div class="client-info-grid">
+            <div class="info-item">
+              <mat-icon class="info-icon">badge</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Tipo de Documento</span>
+                <span class="info-value document-chip">{{ client.type_document }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <mat-icon class="info-icon">description</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Número de Documento</span>
+                <span class="info-value">{{ client.number_document }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <mat-icon class="info-icon">vpn_key</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Código Único</span>
+                <span class="info-value code-chip">{{ client.uniqueCode }}</span>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <mat-icon class="info-icon">inventory</mat-icon>
+              <div class="info-content">
+                <span class="info-label">Total de Productos</span>
+                <span class="info-value product-count">{{ client.products.length }} productos encontrados</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="client.products.length > 3" class="highlight-message">
+            <mat-icon class="highlight-icon">star</mat-icon>
+            <span>¡Cliente destacado! Tiene más de 3 productos registrados.</span>
+          </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="products-card">
+          <div class="card-header">
+            <h3 class="section-title">
+              <mat-icon class="section-icon">inventory</mat-icon>
+              Productos del Cliente
+            </h3>
+            <button mat-raised-button color="primary" (click)="viewProducts()" class="view-products-button">
+              <mat-icon>visibility</mat-icon>
+              Ver Productos
+            </button>
+          </div>
+
+          <div *ngIf="client.products.length === 0" class="empty-products">
+            <mat-icon class="empty-icon">inventory_2</mat-icon>
+            <h4>No hay productos registrados</h4>
+            <p>Este cliente aún no tiene productos asociados.</p>
+          </div>
+
+          <div *ngIf="client.products.length > 0" class="products-grid">
+            <div *ngFor="let product of client.products" class="product-item">
+              <div class="product-header">
+                <mat-icon class="product-icon">account_balance</mat-icon>
+                <span class="product-name">{{ product.name }}</span>
+              </div>
+              <div class="product-details">
+                <span class="product-type">{{ product.productType }}</span>
+                <span class="product-balance">$ {{ product.balance.toLocaleString() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

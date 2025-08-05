@@ -31,148 +31,20 @@ import { User } from '../../../shared/models/user.model';
     MatSidenavModule,
     MatListModule
   ],
-  template: `
-    <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav #drawer class="sidenav" fixedInViewport mode="over">
-        <mat-toolbar class="sidenav-toolbar">
-          <mat-icon class="menu-icon">menu</mat-icon>
-          <span>Menú</span>
-        </mat-toolbar>
-        <mat-nav-list class="nav-list">
-          <a mat-list-item (click)="navigateTo('/dashboard')" [class.active]="isActiveRoute('/dashboard')" class="nav-item">
-            <mat-icon matListItemIcon class="nav-icon">dashboard</mat-icon>
-            <span matListItemTitle>Dashboard</span>
-          </a>
-          <a mat-list-item (click)="navigateTo('/clients')" [class.active]="isActiveRoute('/clients')" class="nav-item">
-            <mat-icon matListItemIcon class="nav-icon">people</mat-icon>
-            <span matListItemTitle>Clientes</span>
-          </a>
-          <a mat-list-item (click)="navigateTo('/products')" [class.active]="isActiveRoute('/products')" class="nav-item">
-            <mat-icon matListItemIcon class="nav-icon">inventory</mat-icon>
-            <span matListItemTitle>Productos</span>
-          </a>
-        </mat-nav-list>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <mat-toolbar class="main-toolbar">
-          <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()" class="menu-button">
-            <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-          </button>
-          <span class="toolbar-title">Financia App - Clientes</span>
-          <span class="spacer"></span>
-          <span *ngIf="currentUser" class="user-info">Hola, {{ currentUser.email }}</span>
-          <button mat-icon-button [matMenuTriggerFor]="menu" class="user-menu-button">
-            <mat-icon>account_circle</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu" class="user-menu">
-            <button mat-menu-item (click)="logout()" class="menu-item">
-              <mat-icon>logout</mat-icon>
-              <span>Cerrar Sesión</span>
-            </button>
-          </mat-menu>
-        </mat-toolbar>
-
-        <div class="content">
-          <div class="header-section">
-            <h1 class="page-title">
-              <mat-icon class="title-icon">people</mat-icon>
-              Gestión de Clientes
-            </h1>
-            <p class="page-subtitle">Administra y visualiza todos los clientes registrados</p>
-          </div>
-
-          <div class="actions-section">
-            <button mat-raised-button color="primary" (click)="navigateToCreateClient()" class="create-button">
-              <mat-icon>add</mat-icon>
-              Nuevo Cliente
-            </button>
-          </div>
-
-          <div class="table-container">
-            <div *ngIf="isLoading" class="loading-container">
-              <mat-spinner class="loading-spinner"></mat-spinner>
-              <p class="loading-text">Cargando clientes...</p>
-            </div>
-
-            <div *ngIf="!isLoading && clients.length === 0" class="empty-state">
-              <mat-icon class="empty-icon">people_outline</mat-icon>
-              <h3>No hay clientes registrados</h3>
-              <p>Comienza agregando tu primer cliente</p>
-              <button mat-raised-button color="primary" (click)="navigateToCreateClient()" class="empty-action-button">
-                <mat-icon>add</mat-icon>
-                Crear Cliente
-              </button>
-            </div>
-
-            <table *ngIf="!isLoading && clients.length > 0" mat-table [dataSource]="clients" class="client-table">
-              <ng-container matColumnDef="full_name">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Nombre</th>
-                <td mat-cell *matCellDef="let client" class="table-cell">{{ client.full_name }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="full_last_name">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Apellido</th>
-                <td mat-cell *matCellDef="let client" class="table-cell">{{ client.full_last_name }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="type_document">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Tipo Doc.</th>
-                <td mat-cell *matCellDef="let client" class="table-cell">
-                  <span class="document-chip">{{ client.type_document }}</span>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="number_document">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Número Doc.</th>
-                <td mat-cell *matCellDef="let client" class="table-cell">{{ client.number_document }}</td>
-              </ng-container>
-
-              <ng-container matColumnDef="uniqueCode">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Código Único</th>
-                <td mat-cell *matCellDef="let client" class="table-cell">
-                  <span class="code-chip">{{ client.uniqueCode }}</span>
-                </td>
-              </ng-container>
-
-              <ng-container matColumnDef="actions">
-                <th mat-header-cell *matHeaderCellDef class="table-header">Acciones</th>
-                <td mat-cell *matCellDef="let client" class="table-cell">
-                  <div class="action-buttons">
-                    <button mat-icon-button color="accent" (click)="viewClientDetails(client.uniqueCode)" class="action-button details-button" matTooltip="Ver Detalles">
-                      <mat-icon>visibility</mat-icon>
-                    </button>
-                    <button mat-icon-button color="primary" (click)="viewClientProducts(client.uniqueCode)" class="action-button products-button" matTooltip="Ver Productos">
-                      <mat-icon>inventory</mat-icon>
-                    </button>
-                    <button mat-icon-button color="warn" (click)="deleteClient(client)" class="action-button delete-button" matTooltip="Eliminar Cliente">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header-row"></tr>
-              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
-            </table>
-          </div>
-        </div>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
-  `,
+  templateUrl: './client-list.component.html',
   styles: [`
     .sidenav-container {
       height: 100vh;
       background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
     }
-    
+
     .sidenav {
       width: 280px;
       background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
       border-right: 1px solid #00ff88;
       box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
     }
-    
+
     .sidenav-toolbar {
       background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
       color: #000;
@@ -182,50 +54,50 @@ import { User } from '../../../shared/models/user.model';
       gap: 12px;
       padding: 16px;
     }
-    
+
     .menu-icon {
       color: #000;
     }
-    
+
     .nav-list {
       padding: 16px 0;
     }
-    
+
     .nav-item {
       margin: 4px 16px;
       border-radius: 12px;
       transition: all 0.3s ease;
       color: #e0e0e0;
     }
-    
+
     .nav-item:hover {
       background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
       color: #00ff88;
       transform: translateX(8px);
     }
-    
+
     .nav-item.active {
       background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
       color: #000;
       box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
     }
-    
+
     .nav-icon {
       margin-right: 12px;
     }
-    
+
     .main-toolbar {
       background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%);
       color: #00ff88;
       border-bottom: 2px solid #00ff88;
       box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
     }
-    
+
     .menu-button {
       color: #00ff88;
       margin-right: 16px;
     }
-    
+
     .toolbar-title {
       font-size: 1.4rem;
       font-weight: 600;
@@ -234,47 +106,47 @@ import { User } from '../../../shared/models/user.model';
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    
+
     .spacer {
       flex: 1 1 auto;
     }
-    
+
     .user-info {
       color: #e0e0e0;
       margin-right: 16px;
       font-size: 0.9rem;
     }
-    
+
     .user-menu-button {
       color: #00ff88;
     }
-    
+
     .user-menu {
       background: #2a2a2a;
       border: 1px solid #00ff88;
     }
-    
+
     .menu-item {
       color: #e0e0e0;
     }
-    
+
     .menu-item:hover {
       background: rgba(0, 255, 136, 0.1);
       color: #00ff88;
     }
-    
+
     .content {
       padding: 32px 24px;
       min-height: calc(100vh - 64px);
       background: transparent;
     }
-    
+
     .header-section {
       text-align: center;
       margin-bottom: 40px;
       animation: fadeInUp 0.8s ease;
     }
-    
+
     .page-title {
       display: flex;
       align-items: center;
@@ -288,28 +160,28 @@ import { User } from '../../../shared/models/user.model';
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    
+
     .title-icon {
       font-size: 2.5rem;
       width: 2.5rem;
       height: 2.5rem;
       color: #00ff88;
     }
-    
+
     .page-subtitle {
       font-size: 1.1rem;
       color: #b0b0b0;
       margin: 0;
       font-weight: 300;
     }
-    
+
     .actions-section {
       display: flex;
       justify-content: center;
       margin-bottom: 32px;
       animation: fadeInUp 0.8s ease 0.2s both;
     }
-    
+
     .create-button {
       background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
       color: #000;
@@ -320,12 +192,12 @@ import { User } from '../../../shared/models/user.model';
       transition: all 0.3s ease;
       font-size: 1rem;
     }
-    
+
     .create-button:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(0, 255, 136, 0.4);
     }
-    
+
     .table-container {
       background: rgba(26, 26, 26, 0.8);
       border-radius: 16px;
@@ -334,7 +206,7 @@ import { User } from '../../../shared/models/user.model';
       border: 1px solid rgba(0, 255, 136, 0.1);
       animation: fadeInUp 0.8s ease 0.4s both;
     }
-    
+
     .loading-container {
       display: flex;
       flex-direction: column;
@@ -343,23 +215,23 @@ import { User } from '../../../shared/models/user.model';
       padding: 60px 20px;
       color: #00ff88;
     }
-    
+
     .loading-spinner {
       margin-bottom: 16px;
     }
-    
+
     .loading-text {
       font-size: 1.1rem;
       color: #b0b0b0;
       margin: 0;
     }
-    
+
     .empty-state {
       text-align: center;
       padding: 60px 20px;
       color: #b0b0b0;
     }
-    
+
     .empty-icon {
       font-size: 4rem;
       width: 4rem;
@@ -367,36 +239,36 @@ import { User } from '../../../shared/models/user.model';
       color: #666;
       margin-bottom: 16px;
     }
-    
+
     .empty-state h3 {
       font-size: 1.5rem;
       margin: 16px 0 8px 0;
       color: #e0e0e0;
     }
-    
+
     .empty-state p {
       font-size: 1rem;
       margin: 0 0 24px 0;
       color: #b0b0b0;
     }
-    
+
     .empty-action-button {
       background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
       color: #000;
       font-weight: 600;
     }
-    
+
     .client-table {
       width: 100%;
       background: transparent;
       border-radius: 12px;
       overflow: hidden;
     }
-    
+
     .table-header-row {
       background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
     }
-    
+
     .table-header {
       color: #000;
       font-weight: 600;
@@ -404,24 +276,24 @@ import { User } from '../../../shared/models/user.model';
       padding: 16px 12px;
       text-align: left;
     }
-    
+
     .table-row {
       background: rgba(42, 42, 42, 0.6);
       transition: all 0.3s ease;
       border-bottom: 1px solid rgba(0, 255, 136, 0.1);
     }
-    
+
     .table-row:hover {
       background: rgba(0, 255, 136, 0.05);
       transform: scale(1.01);
     }
-    
+
     .table-cell {
       color: #e0e0e0;
       padding: 16px 12px;
       font-size: 0.9rem;
     }
-    
+
     .document-chip, .code-chip {
       background: linear-gradient(90deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 204, 102, 0.2) 100%);
       color: #00ff88;
@@ -431,44 +303,44 @@ import { User } from '../../../shared/models/user.model';
       font-weight: 500;
       border: 1px solid rgba(0, 255, 136, 0.3);
     }
-    
+
     .action-buttons {
       display: flex;
       gap: 8px;
       justify-content: center;
     }
-    
+
     .action-button {
       transition: all 0.3s ease;
     }
-    
+
     .details-button {
       color: #00ff88;
     }
-    
+
     .details-button:hover {
       background: rgba(0, 255, 136, 0.1);
       transform: scale(1.1);
     }
-    
+
     .products-button {
       color: #ff6b35;
     }
-    
+
     .products-button:hover {
       background: rgba(255, 107, 53, 0.1);
       transform: scale(1.1);
     }
-    
+
     .delete-button {
       color: #ff4757;
     }
-    
+
     .delete-button:hover {
       background: rgba(255, 71, 87, 0.1);
       transform: scale(1.1);
     }
-    
+
     @media (max-width: 900px) {
       .content {
         padding: 24px 16px;
@@ -480,7 +352,7 @@ import { User } from '../../../shared/models/user.model';
         padding: 16px;
       }
     }
-    
+
     @media (max-width: 600px) {
       .content {
         padding: 16px 8px;
@@ -498,7 +370,7 @@ import { User } from '../../../shared/models/user.model';
         gap: 4px;
       }
     }
-    
+
     @keyframes fadeInUp {
       from {
         opacity: 0;
@@ -539,7 +411,7 @@ export class ClientListComponent implements OnInit {
         console.log('Loaded clients:', clients);
         console.log('First client uniqueCode:', clients[0]?.uniqueCode);
         console.log('Type of first client uniqueCode:', typeof clients[0]?.uniqueCode);
-        
+
         // Log all clients and their uniqueCodes
         clients.forEach((client, index) => {
           console.log(`Client ${index + 1}:`, {
@@ -549,7 +421,7 @@ export class ClientListComponent implements OnInit {
             id: client.id
           });
         });
-        
+
         this.isLoading = false;
       },
       error: (error) => {
@@ -565,7 +437,7 @@ export class ClientListComponent implements OnInit {
 
   viewClientDetails(uniqueCode: string): void {
     console.log('Viewing client details for encrypted code:', uniqueCode);
-    
+
     // Use the encrypted uniqueCode directly to get client details
     this.clientService.getClientByEncryptedCode(uniqueCode).subscribe({
       next: (client) => {
@@ -583,23 +455,23 @@ export class ClientListComponent implements OnInit {
   viewClientProducts(uniqueCode: string): void {
     // Find the client by uniqueCode to get the ID
     const client = this.clients.find(c => String(c.uniqueCode) === uniqueCode);
-    
+
     if (!client) {
       console.error('Client not found for uniqueCode:', uniqueCode);
       this.snackBar.open('Cliente no encontrado', 'Cerrar', { duration: 3000 });
       return;
     }
-    
+
     console.log('Found client:', client);
     console.log('Client ID:', client.id);
     console.log('Client uniqueCode (encrypted):', client.uniqueCode);
-    
+
     if (!client.id || client.id <= 0) {
       console.error('Invalid client ID:', client.id);
       this.snackBar.open('ID de cliente inválido', 'Cerrar', { duration: 3000 });
       return;
     }
-    
+
     // Navigate directly using the client ID
     this.router.navigate(['/products'], { queryParams: { clientId: client.id } });
   }
@@ -608,7 +480,7 @@ export class ClientListComponent implements OnInit {
   testClientDetails(): void {
     const testEncryptedCode = 'shm/UtMDp4CBtW6OA20cIA==';
     console.log('Testing client details with encrypted code:', testEncryptedCode);
-    
+
     this.clientService.getClientByEncryptedCode(testEncryptedCode).subscribe({
       next: (client) => {
         console.log('✅ Client details found:', client);
@@ -628,7 +500,7 @@ export class ClientListComponent implements OnInit {
         console.error('Invalid client ID for deletion:', client.id);
         return;
       }
-      
+
       this.clientService.deleteClient(client.id).subscribe({
         next: () => {
           this.snackBar.open('Cliente eliminado exitosamente', 'Cerrar', { duration: 3000 });

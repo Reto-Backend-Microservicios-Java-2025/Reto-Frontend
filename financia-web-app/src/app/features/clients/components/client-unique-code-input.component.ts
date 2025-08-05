@@ -21,26 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
     FormsModule,
     MatIconModule
   ],
-  template: `
-    <div class="center-container">
-      <mat-card class="input-card">
-        <mat-card-title>Consultar Detalles de Cliente</mat-card-title>
-        <mat-card-content>
-          <form (ngSubmit)="onSubmit()" autocomplete="off">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Ingrese UniqueCode Encriptado</mat-label>
-              <input matInput [(ngModel)]="encryptedCodeInput" name="encryptedCodeInput" type="text" required autocomplete="off">
-              <mat-hint *ngIf="expectedEncryptedCode">Sugerencia: {{ expectedEncryptedCode }}</mat-hint>
-            </mat-form-field>
-            <button mat-raised-button color="primary" class="full-width" [disabled]="!encryptedCodeInput">Ver Detalles</button>
-            <div *ngIf="errorMessage" class="error-message">
-              <mat-icon color="warn">error</mat-icon> {{ errorMessage }}
-            </div>
-          </form>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  `,
+  templateUrl: './client-unique-code-input.component.html',
   styles: [`
     .center-container {
       min-height: 100vh;
