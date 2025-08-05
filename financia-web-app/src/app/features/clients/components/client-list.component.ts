@@ -369,14 +369,23 @@ export class ClientListComponent implements OnInit {
 
   deleteClient(client: Client): void {
     if (confirm(`¿Seguro que deseas eliminar al cliente ${client.full_name} ${client.full_last_name}?`)) {
-      this.clientService.deleteClient(Number(client.uniqueCode)).subscribe({
-        next: () => {
-          this.snackBar.open('Cliente eliminado exitosamente', 'Cerrar', { duration: 3000 });
-          this.loadClients();
+      // Obtener el id real usando el uniqueCode encriptado
+      this.clientService.getClientByEncryptedCode(String(client.uniqueCode)).subscribe({
+        next: (clientWithProducts) => {
+          this.clientService.deleteClient(clientWithProducts.id).subscribe({
+            next: () => {
+              this.snackBar.open('Cliente eliminado exitosamente', 'Cerrar', { duration: 3000 });
+              this.loadClients();
+            },
+            error: (error) => {
+              this.snackBar.open('Error al eliminar el cliente', 'Cerrar', { duration: 5000 });
+              console.error('Error deleting client:', error);
+            }
+          });
         },
         error: (error) => {
-          this.snackBar.open('Error al eliminar el cliente', 'Cerrar', { duration: 5000 });
-          console.error('Error deleting client:', error);
+          this.snackBar.open('No se pudo obtener el ID del cliente', 'Cerrar', { duration: 5000 });
+          console.error('Error fetching client by encryptedCode:', error);
         }
       });
     }
