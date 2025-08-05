@@ -14,7 +14,7 @@
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nombre del Producto</mat-label>
-          <input matInput formControlName="name" required class="form-input">
+          <input matInput formControlName="name" required class="form-input" style="color:white;">
           <mat-icon matSuffix class="field-icon">inventory</mat-icon>
           <mat-error *ngIf="productForm.get('name')?.hasError('required')" class="error-text">
             El nombre es requerido
@@ -26,10 +26,10 @@
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Tipo de Producto</mat-label>
           <mat-select formControlName="productType" required class="form-select">
-            <mat-option value="SAVINGS">Ahorro</mat-option>
-            <mat-option value="CHECKING">Corriente</mat-option>
-            <mat-option value="CREDIT">Crédito</mat-option>
-            <mat-option value="INVESTMENT">Inversión</mat-option>
+            <mat-option value="SAVINGS_ACCOUNT">Ahorro</mat-option>
+            <mat-option value="CHECKING_ACCOUNT">Corriente</mat-option>
+            <mat-option value="CREDIT_CARD">Crédito</mat-option>
+            <mat-option value="INVESTMENT_ACCOUNT">Inversión</mat-option>
           </mat-select>
           <mat-icon matSuffix class="field-icon">category</mat-icon>
           <mat-error *ngIf="productForm.get('productType')?.hasError('required')" class="error-text">
@@ -39,7 +39,7 @@
 
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Saldo</mat-label>
-          <input matInput type="number" formControlName="balance" required class="form-input">
+          <input matInput type="number" formControlName="balance" required class="form-input" style="color:white;">
           <mat-icon matSuffix class="field-icon">attach_money</mat-icon>
           <mat-error *ngIf="productForm.get('balance')?.hasError('required')" class="error-text">
             El saldo es requerido

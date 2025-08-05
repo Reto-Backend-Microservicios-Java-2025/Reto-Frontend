@@ -194,6 +194,12 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
       border: 1px solid rgba(0, 255, 136, 0.1);
     }
 
+    .m-label {
+      color: #b0b0b0;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
     .form-row {
       display: flex;
       flex-wrap: wrap;
@@ -210,7 +216,7 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
     }
 
     .form-input, .form-select {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     .field-icon {
@@ -302,20 +308,85 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
     }
 
     ::ng-deep .mat-select-value {
-      color: #e0e0e0;
+      color: #333333;
     }
 
     ::ng-deep .mat-select-arrow {
       color: #00ff88;
     }
 
+    /* Input field styling for better contrast */
+    ::ng-deep .mat-form-field .mat-form-field-infix {
+      background-color: #ffffff !important;
+      border-radius: 4px;
+      padding: 8px 12px;
+    }
+
+    ::ng-deep .mat-form-field input.mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field textarea.mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-infix input {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field input::placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input::-webkit-input-placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-moz-placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-ms-input-placeholder {
+      color: #666666 !important;
+    }
+
+    /* Select dropdown styling */
+    ::ng-deep .mat-select-panel {
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-option {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-option:hover {
+      background-color: #f0f0f0 !important;
+      color: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-option.mat-selected {
+      background-color: #e8f5e8 !important;
+      color: #00ff88 !important;
+    }
+
     @media (max-width: 900px) {
       .content {
         padding: 24px 16px;
       }
+
       .page-title {
         font-size: 2rem;
       }
+
       .client-form {
         padding: 24px;
       }
@@ -325,21 +396,26 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
       .content {
         padding: 16px 8px;
       }
+
       .page-title {
         font-size: 1.8rem;
         flex-direction: column;
         gap: 8px;
       }
+
       .client-form {
         padding: 20px;
       }
+
       .form-row {
         flex-direction: column;
         gap: 0;
       }
+
       .half-width {
         width: 100%;
       }
+
       .form-actions {
         flex-direction: column;
         gap: 16px;

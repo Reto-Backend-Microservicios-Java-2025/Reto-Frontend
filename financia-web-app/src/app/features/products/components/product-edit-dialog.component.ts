@@ -108,7 +108,7 @@ export interface ProductDialogData {
     }
 
     .form-input, .form-select {
-      color: #e0e0e0;
+      color: #ffffff;
     }
 
     .field-icon {
@@ -205,25 +205,74 @@ export interface ProductDialogData {
     }
 
     ::ng-deep .mat-select-value {
-      color: #e0e0e0;
+      color: #333333;
     }
 
     ::ng-deep .mat-select-arrow {
       color: #00ff88;
     }
 
+    /* Input field styling for better contrast */
+    ::ng-deep .mat-form-field .mat-form-field-infix {
+      background-color: #ffffff !important;
+      border-radius: 4px;
+      padding: 8px 12px;
+    }
+
+    ::ng-deep .mat-form-field input.mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field textarea.mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-infix input {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field input::placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-webkit-input-placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-moz-placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-ms-input-placeholder {
+      color: #666666 !important;
+    }
+
+    /* Select dropdown styling */
+    ::ng-deep .mat-select-panel {
+      background-color: #ffffff !important;
+    }
+
     ::ng-deep .mat-option {
-      color: #e0e0e0;
+      color: #333333 !important;
+      background-color: #ffffff !important;
     }
 
     ::ng-deep .mat-option:hover {
-      background: rgba(0, 255, 136, 0.1);
-      color: #00ff88;
+      background-color: #f0f0f0 !important;
+      color: #00ff88 !important;
     }
 
     ::ng-deep .mat-option.mat-selected {
-      background: rgba(0, 255, 136, 0.2);
-      color: #00ff88;
+      background-color: #e8f5e8 !important;
+      color: #00ff88 !important;
     }
 
     @media (max-width: 600px) {

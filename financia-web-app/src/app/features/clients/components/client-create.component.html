@@ -53,7 +53,7 @@
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Nombre</mat-label>
-              <input matInput formControlName="full_name" required class="form-input">
+              <input matInput formControlName="full_name" required class="form-input" style="color:white;">
               <mat-icon matSuffix class="field-icon">person</mat-icon>
               <mat-error *ngIf="clientForm.get('full_name')?.hasError('required')" class="error-text">
                 El nombre es requerido
@@ -67,7 +67,7 @@
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Apellido</mat-label>
-              <input matInput formControlName="full_last_name" required class="form-input">
+              <input matInput formControlName="full_last_name" required class="form-input" style="color:white;">
               <mat-icon matSuffix class="field-icon">person</mat-icon>
               <mat-error *ngIf="clientForm.get('full_last_name')?.hasError('required')" class="error-text">
                 El apellido es requerido
@@ -95,7 +95,7 @@
 
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Número de Documento</mat-label>
-              <input matInput formControlName="number_document" required class="form-input">
+              <input matInput formControlName="number_document" required class="form-input" style="color:white;">
               <mat-icon matSuffix class="field-icon">numbers</mat-icon>
               <mat-error *ngIf="clientForm.get('number_document')?.hasError('required')" class="error-text">
                 El número de documento es requerido
@@ -109,7 +109,7 @@
           <div class="form-row">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Código Único (16 dígitos)</mat-label>
-              <input matInput formControlName="uniqueCode" required class="form-input" maxlength="16">
+              <input matInput formControlName="uniqueCode" required class="form-input" maxlength="16" style="color:white;">
               <mat-icon matSuffix class="field-icon">vpn_key</mat-icon>
               <mat-hint>Debe tener exactamente 16 dígitos numéricos</mat-hint>
               <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('required')" class="error-text">
