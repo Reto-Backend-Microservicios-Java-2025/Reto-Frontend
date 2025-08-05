@@ -194,6 +194,12 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
       border: 1px solid rgba(0, 255, 136, 0.1);
     }
 
+    .m-label {
+      color: #b0b0b0;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
     .form-row {
       display: flex;
       flex-wrap: wrap;
@@ -340,7 +346,7 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
       color: #666666 !important;
     }
 
-    ::ng-deep .mat-form-field input:-webkit-input-placeholder {
+    ::ng-deep .mat-form-field input::-webkit-input-placeholder {
       color: #666666 !important;
     }
 
@@ -376,9 +382,11 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
       .content {
         padding: 24px 16px;
       }
+
       .page-title {
         font-size: 2rem;
       }
+
       .client-form {
         padding: 24px;
       }
@@ -388,21 +396,26 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
       .content {
         padding: 16px 8px;
       }
+
       .page-title {
         font-size: 1.8rem;
         flex-direction: column;
         gap: 8px;
       }
+
       .client-form {
         padding: 20px;
       }
+
       .form-row {
         flex-direction: column;
         gap: 0;
       }
+
       .half-width {
         width: 100%;
       }
+
       .form-actions {
         flex-direction: column;
         gap: 16px;

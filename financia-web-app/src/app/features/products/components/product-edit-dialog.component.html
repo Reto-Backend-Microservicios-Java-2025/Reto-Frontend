@@ -14,7 +14,7 @@
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nombre del Producto</mat-label>
-          <input matInput formControlName="name" required class="form-input">
+          <input matInput formControlName="name" required class="form-input" style="color:white;">
           <mat-icon matSuffix class="field-icon">inventory</mat-icon>
           <mat-error *ngIf="productForm.get('name')?.hasError('required')" class="error-text">
             El nombre es requerido
@@ -39,7 +39,7 @@
 
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Saldo</mat-label>
-          <input matInput type="number" formControlName="balance" required class="form-input">
+          <input matInput type="number" formControlName="balance" required class="form-input" style="color:white;">
           <mat-icon matSuffix class="field-icon">attach_money</mat-icon>
           <mat-error *ngIf="productForm.get('balance')?.hasError('required')" class="error-text">
             El saldo es requerido
