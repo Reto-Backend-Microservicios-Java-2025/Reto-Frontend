@@ -4,6 +4,7 @@ import { HttpClientService } from '../../../core/services/http-client.service';
 import { Client, CreateClientRequest, ClientWithProducts, ClientForProductSelection } from '../../../shared/models/client.model';
 import { environment } from '../../../../environments/environment';
 import { map } from 'rxjs/operators';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class ClientService {
   getAllClientsWithIds(): Observable<ClientForProductSelection[]> {
     return this.httpClient.get<Client[]>(this.endpoint).pipe(
       map(clients => clients.map(client => ({
-        id: typeof client.uniqueCode === 'string' ? parseInt(client.uniqueCode, 10) : client.uniqueCode, // Use uniqueCode as ID temporarily
+        id: client.id ?? (typeof client.uniqueCode === 'string' ? parseInt(client.uniqueCode, 10) : client.uniqueCode),
         full_name: client.full_name,
         full_last_name: client.full_last_name,
         type_document: client.type_document,
@@ -55,9 +56,13 @@ export class ClientService {
 
   // Utility method to encrypt uniqueCode for navigation
   encryptUniqueCode(uniqueCode: number): string {
-    // This should match your backend encryption logic
-    // For now, we'll just convert to string - you might need to implement actual encryption
-    return uniqueCode.toString();
+    // AES/ECB/PKCS5Padding con clave 1234567890123456, salida Base64
+    const key = CryptoJS.enc.Utf8.parse('1234567890123456');
+    const encrypted = CryptoJS.AES.encrypt(uniqueCode.toString(), key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    return encrypted.toString(); // Base64
   }
 
   // Utility method to decrypt encrypted code
