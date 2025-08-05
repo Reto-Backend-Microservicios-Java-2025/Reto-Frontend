@@ -1,5 +1,5 @@
 export interface Client {
-  id?: number; // Optional because ClientResource doesn't have id, but ClientWithProducts does
+  id: number; // Required because ClientResource includes id
   full_name: string;
   full_last_name: string;
   type_document: string;

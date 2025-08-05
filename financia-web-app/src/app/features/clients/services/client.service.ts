@@ -15,16 +15,27 @@ export class ClientService {
   constructor(private httpClient: HttpClientService) {}
 
   getAllClients(): Observable<Client[]> {
-    return this.httpClient.get<Client[]>(this.endpoint);
+    return this.httpClient.get<Client[]>(this.endpoint).pipe(
+      map(clients => {
+        console.log('Raw clients from backend:', clients);
+        clients.forEach((client, index) => {
+          console.log(`Client ${index + 1}:`, {
+            id: client.id,
+            name: `${client.full_name} ${client.full_last_name}`,
+            uniqueCode: client.uniqueCode
+          });
+        });
+        return clients;
+      })
+    );
   }
 
   // Get all clients with their IDs for product creation
-  // Since ClientResource doesn't have ID, we'll use uniqueCode as a temporary solution
-  // In a real implementation, you might need a different endpoint that returns clients with IDs
+  // Since ClientResource includes ID, we can use it directly
   getAllClientsWithIds(): Observable<ClientForProductSelection[]> {
     return this.httpClient.get<Client[]>(this.endpoint).pipe(
       map(clients => clients.map(client => ({
-        id: typeof client.uniqueCode === 'string' ? parseInt(client.uniqueCode, 10) : client.uniqueCode,
+        id: client.id, // Use the id directly from ClientResource
         full_name: client.full_name,
         full_last_name: client.full_last_name,
         type_document: client.type_document,
