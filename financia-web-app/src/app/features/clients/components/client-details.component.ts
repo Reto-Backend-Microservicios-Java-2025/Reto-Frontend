@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 import { ClientService } from '../services/client.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { ClientWithProducts } from '../../../shared/models/client.model';
@@ -32,7 +33,8 @@ import { User } from '../../../shared/models/user.model';
     MatProgressSpinnerModule,
     MatChipsModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    FormsModule
   ],
   template: `
     <mat-sidenav-container class="sidenav-container">
@@ -132,7 +134,7 @@ import { User } from '../../../shared/models/user.model';
                     </div>
                   </div>
                 </div>
-                <div *ngIf="client.products?.length > 3" class="highlight-message">
+                <div *ngIf="client.products && client.products.length > 3" class="highlight-message">
                   <mat-icon color="warn">star</mat-icon>
                   <span>¡Este cliente tiene más de 3 productos asociados!</span>
                 </div>
@@ -156,7 +158,7 @@ import { User } from '../../../shared/models/user.model';
                   <mat-icon>inventory</mat-icon>
                   Productos del Cliente
                 </mat-card-title>
-                <mat-card-subtitle>{{ client.products?.length || 0 }} productos encontrados</mat-card-subtitle>
+                <mat-card-subtitle>{{ client.products.length || 0 }} productos encontrados</mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
                 <div *ngIf="!client.products || client.products.length === 0" class="no-products">
