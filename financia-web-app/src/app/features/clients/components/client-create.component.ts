@@ -63,7 +63,7 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
           </button>
           <span>Financia App - Nuevo Cliente</span>
           <span class="spacer"></span>
-          <span *ngIf="currentUser">Hola, {{ currentUser.firstName }}</span>
+          <span *ngIf="currentUser">Hola, {{ currentUser.email }}</span>
           <button mat-icon-button [matMenuTriggerFor]="menu">
             <mat-icon>account_circle</mat-icon>
           </button>
@@ -90,12 +90,12 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
                 <div class="form-row">
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Nombre</mat-label>
-                    <input matInput formControlName="fullName" required>
+                    <input matInput formControlName="full_name" required>
                     <mat-icon matSuffix>person</mat-icon>
-                    <mat-error *ngIf="clientForm.get('fullName')?.hasError('required')">
+                    <mat-error *ngIf="clientForm.get('full_name')?.hasError('required')">
                       El nombre es requerido
                     </mat-error>
-                    <mat-error *ngIf="clientForm.get('fullName')?.hasError('minlength')">
+                    <mat-error *ngIf="clientForm.get('full_name')?.hasError('minlength')">
                       El nombre debe tener al menos 2 caracteres
                     </mat-error>
                   </mat-form-field>
@@ -104,12 +104,12 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
                 <div class="form-row">
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Apellidos</mat-label>
-                    <input matInput formControlName="fullLastName" required>
+                    <input matInput formControlName="full_last_name" required>
                     <mat-icon matSuffix>person</mat-icon>
-                    <mat-error *ngIf="clientForm.get('fullLastName')?.hasError('required')">
+                    <mat-error *ngIf="clientForm.get('full_last_name')?.hasError('required')">
                       Los apellidos son requeridos
                     </mat-error>
-                    <mat-error *ngIf="clientForm.get('fullLastName')?.hasError('minlength')">
+                    <mat-error *ngIf="clientForm.get('full_last_name')?.hasError('minlength')">
                       Los apellidos deben tener al menos 2 caracteres
                     </mat-error>
                   </mat-form-field>
@@ -118,26 +118,40 @@ import { CreateClientRequest } from '../../../shared/models/client.model';
                 <div class="form-row">
                   <mat-form-field appearance="outline" class="half-width">
                     <mat-label>Tipo de Documento</mat-label>
-                    <mat-select formControlName="typeDocument" required>
+                    <mat-select formControlName="type_document" required>
                       <mat-option value="DNI">DNI</mat-option>
                       <mat-option value="PASSPORT">Pasaporte</mat-option>
                       <mat-option value="CE">Carné de Extranjería</mat-option>
                       <mat-option value="RUC">RUC</mat-option>
                     </mat-select>
-                    <mat-error *ngIf="clientForm.get('typeDocument')?.hasError('required')">
+                    <mat-error *ngIf="clientForm.get('type_document')?.hasError('required')">
                       Seleccione un tipo de documento
                     </mat-error>
                   </mat-form-field>
 
                   <mat-form-field appearance="outline" class="half-width">
                     <mat-label>Número de Documento</mat-label>
-                    <input matInput formControlName="documentNumber" required>
+                    <input matInput formControlName="number_document" required>
                     <mat-icon matSuffix>badge</mat-icon>
-                    <mat-error *ngIf="clientForm.get('documentNumber')?.hasError('required')">
+                    <mat-error *ngIf="clientForm.get('number_document')?.hasError('required')">
                       El número de documento es requerido
                     </mat-error>
-                    <mat-error *ngIf="clientForm.get('documentNumber')?.hasError('pattern')">
+                    <mat-error *ngIf="clientForm.get('number_document')?.hasError('pattern')">
                       Ingrese un número de documento válido
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Código Único</mat-label>
+                    <input matInput type="number" formControlName="uniqueCode" required>
+                    <mat-icon matSuffix>fingerprint</mat-icon>
+                    <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('required')">
+                      El código único es requerido
+                    </mat-error>
+                    <mat-error *ngIf="clientForm.get('uniqueCode')?.hasError('min')">
+                      El código único debe ser mayor a 0
                     </mat-error>
                   </mat-form-field>
                 </div>
@@ -262,10 +276,11 @@ export class ClientCreateComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {
     this.clientForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.minLength(2)]],
-      fullLastName: ['', [Validators.required, Validators.minLength(2)]],
-      typeDocument: ['', [Validators.required]],
-      documentNumber: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z]+$/)]]
+      full_name: ['', [Validators.required, Validators.minLength(2)]],
+      full_last_name: ['', [Validators.required, Validators.minLength(2)]],
+      type_document: ['', [Validators.required]],
+      number_document: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z]+$/)]],
+      uniqueCode: [null, [Validators.required, Validators.min(1)]]
     });
   }
 

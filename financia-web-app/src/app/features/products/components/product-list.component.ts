@@ -63,7 +63,7 @@ import { ProductEditDialogComponent } from './product-edit-dialog.component';
           </button>
           <span>Financia App - Productos</span>
           <span class="spacer"></span>
-          <span *ngIf="currentUser">Hola, {{ currentUser.firstName }}</span>
+          <span *ngIf="currentUser">Hola, {{ currentUser.email }}</span>
           <button mat-icon-button [matMenuTriggerFor]="menu">
             <mat-icon>account_circle</mat-icon>
           </button>
@@ -123,31 +123,24 @@ import { ProductEditDialogComponent } from './product-edit-dialog.component';
                     <td mat-cell *matCellDef="let product">{{ product.name }}</td>
                   </ng-container>
 
-                  <ng-container matColumnDef="description">
-                    <th mat-header-cell *matHeaderCellDef>Descripción</th>
-                    <td mat-cell *matCellDef="let product" class="description-cell">
-                      {{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}
-                    </td>
-                  </ng-container>
+                                    <ng-container matColumnDef="productType">
+                     <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                     <td mat-cell *matCellDef="let product">
+                       {{ product.productType }}
+                     </td>
+                   </ng-container>
 
-                  <ng-container matColumnDef="price">
-                    <th mat-header-cell *matHeaderCellDef>Precio</th>
-                    <td mat-cell *matCellDef="let product" class="price-cell">
-                      {{ product.price | currency:'USD':'symbol':'1.2-2' }}
-                    </td>
-                  </ng-container>
+                   <ng-container matColumnDef="balance">
+                     <th mat-header-cell *matHeaderCellDef>Saldo</th>
+                     <td mat-cell *matCellDef="let product" class="balance-cell">
+                       {{ product.balance | currency:'USD':'symbol':'1.2-2' }}
+                     </td>
+                   </ng-container>
 
-                  <ng-container matColumnDef="clientId">
-                    <th mat-header-cell *matHeaderCellDef>Cliente ID</th>
-                    <td mat-cell *matCellDef="let product">{{ product.clientId }}</td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="createdAt">
-                    <th mat-header-cell *matHeaderCellDef>Fecha Creación</th>
-                    <td mat-cell *matCellDef="let product">
-                      {{ product.createdAt | date:'dd/MM/yyyy' }}
-                    </td>
-                  </ng-container>
+                   <ng-container matColumnDef="clientId">
+                     <th mat-header-cell *matHeaderCellDef>Cliente ID</th>
+                     <td mat-cell *matCellDef="let product">{{ product.clientId }}</td>
+                   </ng-container>
 
                   <ng-container matColumnDef="actions">
                     <th mat-header-cell *matHeaderCellDef>Acciones</th>
@@ -254,11 +247,7 @@ import { ProductEditDialogComponent } from './product-edit-dialog.component';
       width: 100%;
     }
 
-    .description-cell {
-      max-width: 200px;
-    }
-
-    .price-cell {
+    .balance-cell {
       text-align: right;
       font-weight: 500;
       color: #2e7d32;
@@ -284,7 +273,7 @@ import { ProductEditDialogComponent } from './product-edit-dialog.component';
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
-  displayedColumns: string[] = ['id', 'name', 'description', 'price', 'clientId', 'createdAt', 'actions'];
+  displayedColumns: string[] = ['id', 'name', 'productType', 'balance', 'clientId', 'actions'];
   isLoading = false;
   currentUser: any = null;
   clientFilter: number | null = null;
@@ -308,6 +297,10 @@ export class ProductListComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['clientId']) {
         this.clientFilter = +params['clientId'];
+      } else if (params['uniqueCode']) {
+        // If we have uniqueCode, we need to convert it to clientId
+        // For now, we'll use uniqueCode as clientId (assuming they match)
+        this.clientFilter = +params['uniqueCode'];
       }
       this.loadProducts();
     });

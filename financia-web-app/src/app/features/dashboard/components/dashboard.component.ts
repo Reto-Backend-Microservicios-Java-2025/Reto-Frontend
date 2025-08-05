@@ -51,7 +51,7 @@ import { User } from '../../../shared/models/user.model';
           </button>
           <span>Financia App</span>
           <span class="spacer"></span>
-          <span *ngIf="currentUser">Hola, {{ currentUser.firstName }}</span>
+          <span *ngIf="currentUser">Hola, {{ currentUser.email }}</span>
           <button mat-icon-button [matMenuTriggerFor]="menu">
             <mat-icon>account_circle</mat-icon>
           </button>

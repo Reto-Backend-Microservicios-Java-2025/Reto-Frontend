@@ -58,7 +58,7 @@ import { User } from '../../../shared/models/user.model';
           </button>
           <span>Financia App - Clientes</span>
           <span class="spacer"></span>
-          <span *ngIf="currentUser">Hola, {{ currentUser.firstName }}</span>
+          <span *ngIf="currentUser">Hola, {{ currentUser.email }}</span>
           <button mat-icon-button [matMenuTriggerFor]="menu">
             <mat-icon>account_circle</mat-icon>
           </button>
@@ -100,54 +100,49 @@ import { User } from '../../../shared/models/user.model';
                 </button>
               </div>
 
-              <div *ngIf="!isLoading && clients.length > 0" class="table-container">
-                <table mat-table [dataSource]="clients" class="mat-elevation-8">
-                  <ng-container matColumnDef="id">
-                    <th mat-header-cell *matHeaderCellDef>ID</th>
-                    <td mat-cell *matCellDef="let client">{{ client.id }}</td>
-                  </ng-container>
+                              <div *ngIf="!isLoading && clients.length > 0" class="table-container">
+                 <table mat-table [dataSource]="clients" class="mat-elevation-8">
+                   <ng-container matColumnDef="full_name">
+                     <th mat-header-cell *matHeaderCellDef>Nombre</th>
+                     <td mat-cell *matCellDef="let client">{{ client.full_name }}</td>
+                   </ng-container>
 
-                  <ng-container matColumnDef="fullName">
-                    <th mat-header-cell *matHeaderCellDef>Nombre</th>
-                    <td mat-cell *matCellDef="let client">{{ client.fullName }}</td>
-                  </ng-container>
+                   <ng-container matColumnDef="full_last_name">
+                     <th mat-header-cell *matHeaderCellDef>Apellidos</th>
+                     <td mat-cell *matCellDef="let client">{{ client.full_last_name }}</td>
+                   </ng-container>
 
-                  <ng-container matColumnDef="fullLastName">
-                    <th mat-header-cell *matHeaderCellDef>Apellidos</th>
-                    <td mat-cell *matCellDef="let client">{{ client.fullLastName }}</td>
-                  </ng-container>
+                   <ng-container matColumnDef="type_document">
+                     <th mat-header-cell *matHeaderCellDef>Tipo Doc.</th>
+                     <td mat-cell *matCellDef="let client">{{ client.type_document }}</td>
+                   </ng-container>
 
-                  <ng-container matColumnDef="typeDocument">
-                    <th mat-header-cell *matHeaderCellDef>Tipo Doc.</th>
-                    <td mat-cell *matCellDef="let client">{{ client.typeDocument }}</td>
-                  </ng-container>
+                   <ng-container matColumnDef="number_document">
+                     <th mat-header-cell *matHeaderCellDef>Nº Documento</th>
+                     <td mat-cell *matCellDef="let client">{{ client.number_document }}</td>
+                   </ng-container>
 
-                  <ng-container matColumnDef="documentNumber">
-                    <th mat-header-cell *matHeaderCellDef>Nº Documento</th>
-                    <td mat-cell *matCellDef="let client">{{ client.documentNumber }}</td>
-                  </ng-container>
+                   <ng-container matColumnDef="uniqueCode">
+                     <th mat-header-cell *matHeaderCellDef>Código Único</th>
+                     <td mat-cell *matCellDef="let client">{{ client.uniqueCode }}</td>
+                   </ng-container>
 
-                  <ng-container matColumnDef="uniqueCode">
-                    <th mat-header-cell *matHeaderCellDef>Código Único</th>
-                    <td mat-cell *matCellDef="let client">{{ client.uniqueCode }}</td>
-                  </ng-container>
+                   <ng-container matColumnDef="actions">
+                     <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                     <td mat-cell *matCellDef="let client">
+                       <button mat-icon-button color="primary" (click)="viewClientDetails(client.uniqueCode)">
+                         <mat-icon>visibility</mat-icon>
+                       </button>
+                       <button mat-icon-button color="accent" (click)="viewClientProducts(client.uniqueCode)">
+                         <mat-icon>inventory</mat-icon>
+                       </button>
+                     </td>
+                   </ng-container>
 
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                    <td mat-cell *matCellDef="let client">
-                      <button mat-icon-button color="primary" (click)="viewClientDetails(client.id)">
-                        <mat-icon>visibility</mat-icon>
-                      </button>
-                      <button mat-icon-button color="accent" (click)="viewClientProducts(client.id)">
-                        <mat-icon>inventory</mat-icon>
-                      </button>
-                    </td>
-                  </ng-container>
-
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table>
-              </div>
+                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                 </table>
+               </div>
             </mat-card-content>
           </mat-card>
         </div>
@@ -252,7 +247,7 @@ import { User } from '../../../shared/models/user.model';
 })
 export class ClientListComponent implements OnInit {
   clients: Client[] = [];
-  displayedColumns: string[] = ['id', 'fullName', 'fullLastName', 'typeDocument', 'documentNumber', 'uniqueCode', 'actions'];
+  displayedColumns: string[] = ['full_name', 'full_last_name', 'type_document', 'number_document', 'uniqueCode', 'actions'];
   isLoading = false;
   currentUser: any = null;
 
@@ -288,12 +283,13 @@ export class ClientListComponent implements OnInit {
     this.router.navigate(['/clients/create']);
   }
 
-  viewClientDetails(clientId: number): void {
-    this.router.navigate(['/clients', clientId]);
+  viewClientDetails(uniqueCode: string): void {
+    // Navigate to client details using encrypted code
+    this.router.navigate(['/clients', uniqueCode]);
   }
 
-  viewClientProducts(clientId: number): void {
-    this.router.navigate(['/products'], { queryParams: { clientId } });
+  viewClientProducts(uniqueCode: string): void {
+    this.router.navigate(['/products'], { queryParams: { uniqueCode } });
   }
 
   navigateTo(route: string): void {

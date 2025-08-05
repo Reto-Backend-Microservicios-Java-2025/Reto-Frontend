@@ -16,8 +16,8 @@ export class ClientService {
     return this.httpClient.get<Client[]>(this.endpoint);
   }
 
-  getClientById(clientId: number): Observable<Client> {
-    return this.httpClient.get<Client>(`${this.endpoint}/id/${clientId}`);
+  getClientById(clientId: number): Observable<ClientWithProducts> {
+    return this.httpClient.get<ClientWithProducts>(`${this.endpoint}/id/${clientId}`);
   }
 
   getClientByEncryptedCode(encryptedCode: string): Observable<ClientWithProducts> {

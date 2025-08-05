@@ -36,24 +36,6 @@ import { SignUpRequest } from '../../../shared/models/user.model';
         <mat-card-content>
           <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nombre</mat-label>
-              <input matInput formControlName="firstName" required>
-              <mat-icon matSuffix>person</mat-icon>
-              <mat-error *ngIf="signUpForm.get('firstName')?.hasError('required')">
-                El nombre es requerido
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Apellido</mat-label>
-              <input matInput formControlName="lastName" required>
-              <mat-icon matSuffix>person</mat-icon>
-              <mat-error *ngIf="signUpForm.get('lastName')?.hasError('required')">
-                El apellido es requerido
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
               <mat-label>Email</mat-label>
               <input matInput type="email" formControlName="email" required>
               <mat-icon matSuffix>email</mat-icon>
@@ -75,7 +57,7 @@ import { SignUpRequest } from '../../../shared/models/user.model';
                 La contraseña es requerida
               </mat-error>
               <mat-error *ngIf="signUpForm.get('password')?.hasError('minlength')">
-                La contraseña debe tener al menos 6 caracteres
+                La contraseña debe tener al menos 8 caracteres
               </mat-error>
             </mat-form-field>
 
@@ -169,10 +151,8 @@ export class SignUpComponent {
     private snackBar: MatSnackBar
   ) {
     this.signUpForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }

@@ -54,34 +54,36 @@ export interface ProductDialogData {
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Descripción</mat-label>
-          <textarea matInput formControlName="description" rows="3" required></textarea>
-          <mat-icon matSuffix>description</mat-icon>
-          <mat-error *ngIf="productForm.get('description')?.hasError('required')">
-            La descripción es requerida
-          </mat-error>
-          <mat-error *ngIf="productForm.get('description')?.hasError('minlength')">
-            La descripción debe tener al menos 10 caracteres
+          <mat-label>Tipo de Producto</mat-label>
+          <mat-select formControlName="productType" required>
+            <mat-option value="SAVINGS_ACCOUNT">Cuenta de Ahorros</mat-option>
+            <mat-option value="CHECKING_ACCOUNT">Cuenta Corriente</mat-option>
+            <mat-option value="CREDIT_CARD">Tarjeta de Crédito</mat-option>
+            <mat-option value="LOAN">Préstamo</mat-option>
+            <mat-option value="INVESTMENT">Inversión</mat-option>
+          </mat-select>
+          <mat-error *ngIf="productForm.get('productType')?.hasError('required')">
+            Seleccione un tipo de producto
           </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Precio</mat-label>
-          <input matInput type="number" formControlName="price" step="0.01" min="0" required>
+          <mat-label>Saldo</mat-label>
+          <input matInput type="number" formControlName="balance" step="0.01" min="0" required>
           <span matTextPrefix>$&nbsp;</span>
-          <mat-error *ngIf="productForm.get('price')?.hasError('required')">
-            El precio es requerido
+          <mat-error *ngIf="productForm.get('balance')?.hasError('required')">
+            El saldo es requerido
           </mat-error>
-          <mat-error *ngIf="productForm.get('price')?.hasError('min')">
-            El precio debe ser mayor a 0
+          <mat-error *ngIf="productForm.get('balance')?.hasError('min')">
+            El saldo debe ser mayor o igual a 0
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="full-width" *ngIf="!data.isEdit">
           <mat-label>Cliente</mat-label>
           <mat-select formControlName="clientId" required>
-            <mat-option *ngFor="let client of clients" [value]="client.id">
-              {{ client.fullName }} {{ client.fullLastName }} ({{ client.documentNumber }})
+            <mat-option *ngFor="let client of clients" [value]="client.uniqueCode">
+              {{ client.full_name }} {{ client.full_last_name }} ({{ client.number_document }})
             </mat-option>
           </mat-select>
           <mat-error *ngIf="productForm.get('clientId')?.hasError('required')">
@@ -145,21 +147,22 @@ export class ProductEditDialogComponent implements OnInit {
   ) {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
-      price: [0, [Validators.required, Validators.min(0.01)]],
-      clientId: ['', [Validators.required]]
+      productType: ['', [Validators.required]],
+      balance: [0, [Validators.required, Validators.min(0)]],
+      clientId: ['', this.data.isEdit ? [] : [Validators.required]]
     });
   }
 
   ngOnInit(): void {
-    this.loadClients();
+    if (!this.data.isEdit) {
+      this.loadClients();
+    }
     
     if (this.data.isEdit && this.data.product) {
       this.productForm.patchValue({
         name: this.data.product.name,
-        description: this.data.product.description,
-        price: this.data.product.price,
-        clientId: this.data.product.clientId
+        productType: this.data.product.productType,
+        balance: this.data.product.balance
       });
     }
   }
@@ -183,8 +186,8 @@ export class ProductEditDialogComponent implements OnInit {
         // Update existing product
         const updateRequest: UpdateProductRequest = {
           name: this.productForm.value.name,
-          description: this.productForm.value.description,
-          price: this.productForm.value.price
+          productType: this.productForm.value.productType,
+          balance: this.productForm.value.balance
         };
 
         this.productService.updateProduct(this.data.product.id, updateRequest).subscribe({
