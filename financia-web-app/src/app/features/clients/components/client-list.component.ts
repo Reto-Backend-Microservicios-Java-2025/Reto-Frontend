@@ -34,36 +34,39 @@ import { User } from '../../../shared/models/user.model';
   template: `
     <mat-sidenav-container class="sidenav-container">
       <mat-sidenav #drawer class="sidenav" fixedInViewport mode="over">
-        <mat-toolbar>Menú</mat-toolbar>
-        <mat-nav-list>
-          <a mat-list-item (click)="navigateTo('/dashboard')" [class.active]="isActiveRoute('/dashboard')">
-            <mat-icon matListItemIcon>dashboard</mat-icon>
+        <mat-toolbar class="sidenav-toolbar">
+          <mat-icon class="menu-icon">menu</mat-icon>
+          <span>Menú</span>
+        </mat-toolbar>
+        <mat-nav-list class="nav-list">
+          <a mat-list-item (click)="navigateTo('/dashboard')" [class.active]="isActiveRoute('/dashboard')" class="nav-item">
+            <mat-icon matListItemIcon class="nav-icon">dashboard</mat-icon>
             <span matListItemTitle>Dashboard</span>
           </a>
-          <a mat-list-item (click)="navigateTo('/clients')" [class.active]="isActiveRoute('/clients')">
-            <mat-icon matListItemIcon>people</mat-icon>
+          <a mat-list-item (click)="navigateTo('/clients')" [class.active]="isActiveRoute('/clients')" class="nav-item">
+            <mat-icon matListItemIcon class="nav-icon">people</mat-icon>
             <span matListItemTitle>Clientes</span>
           </a>
-          <a mat-list-item (click)="navigateTo('/products')" [class.active]="isActiveRoute('/products')">
-            <mat-icon matListItemIcon>inventory</mat-icon>
+          <a mat-list-item (click)="navigateTo('/products')" [class.active]="isActiveRoute('/products')" class="nav-item">
+            <mat-icon matListItemIcon class="nav-icon">inventory</mat-icon>
             <span matListItemTitle>Productos</span>
           </a>
         </mat-nav-list>
       </mat-sidenav>
 
       <mat-sidenav-content>
-        <mat-toolbar color="primary">
-          <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+        <mat-toolbar class="main-toolbar">
+          <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()" class="menu-button">
             <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
           </button>
-          <span>Financia App - Clientes</span>
+          <span class="toolbar-title">Financia App - Clientes</span>
           <span class="spacer"></span>
-          <span *ngIf="currentUser">Hola, {{ currentUser.email }}</span>
-          <button mat-icon-button [matMenuTriggerFor]="menu">
+          <span *ngIf="currentUser" class="user-info">Hola, {{ currentUser.email }}</span>
+          <button mat-icon-button [matMenuTriggerFor]="menu" class="user-menu-button">
             <mat-icon>account_circle</mat-icon>
           </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="logout()">
+          <mat-menu #menu="matMenu" class="user-menu">
+            <button mat-menu-item (click)="logout()" class="menu-item">
               <mat-icon>logout</mat-icon>
               <span>Cerrar Sesión</span>
             </button>
@@ -71,83 +74,88 @@ import { User } from '../../../shared/models/user.model';
         </mat-toolbar>
 
         <div class="content">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>people</mat-icon>
-                Lista de Clientes
-              </mat-card-title>
-              <div class="spacer"></div>
-              <button mat-raised-button color="primary" (click)="navigateToCreateClient()">
+          <div class="header-section">
+            <h1 class="page-title">
+              <mat-icon class="title-icon">people</mat-icon>
+              Gestión de Clientes
+            </h1>
+            <p class="page-subtitle">Administra y visualiza todos los clientes registrados</p>
+          </div>
+
+          <div class="actions-section">
+            <button mat-raised-button color="primary" (click)="navigateToCreateClient()" class="create-button">
+              <mat-icon>add</mat-icon>
+              Nuevo Cliente
+            </button>
+          </div>
+
+          <div class="table-container">
+            <div *ngIf="isLoading" class="loading-container">
+              <mat-spinner class="loading-spinner"></mat-spinner>
+              <p class="loading-text">Cargando clientes...</p>
+            </div>
+
+            <div *ngIf="!isLoading && clients.length === 0" class="empty-state">
+              <mat-icon class="empty-icon">people_outline</mat-icon>
+              <h3>No hay clientes registrados</h3>
+              <p>Comienza agregando tu primer cliente</p>
+              <button mat-raised-button color="primary" (click)="navigateToCreateClient()" class="empty-action-button">
                 <mat-icon>add</mat-icon>
-                Nuevo Cliente
+                Crear Cliente
               </button>
-            </mat-card-header>
+            </div>
 
-            <mat-card-content>
-              <div *ngIf="isLoading" class="loading-container">
-                <mat-spinner></mat-spinner>
-                <p>Cargando clientes...</p>
-              </div>
+            <table *ngIf="!isLoading && clients.length > 0" mat-table [dataSource]="clients" class="client-table">
+              <ng-container matColumnDef="full_name">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Nombre</th>
+                <td mat-cell *matCellDef="let client" class="table-cell">{{ client.full_name }}</td>
+              </ng-container>
 
-              <div *ngIf="!isLoading && clients.length === 0" class="empty-state">
-                <mat-icon>people_outline</mat-icon>
-                <h3>No hay clientes registrados</h3>
-                <p>Comienza agregando tu primer cliente</p>
-                <button mat-raised-button color="primary" (click)="navigateToCreateClient()">
-                  <mat-icon>add</mat-icon>
-                  Crear Cliente
-                </button>
-              </div>
+              <ng-container matColumnDef="full_last_name">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Apellido</th>
+                <td mat-cell *matCellDef="let client" class="table-cell">{{ client.full_last_name }}</td>
+              </ng-container>
 
-                              <div *ngIf="!isLoading && clients.length > 0" class="table-container">
-                 <table mat-table [dataSource]="clients" class="mat-elevation-8">
-                   <ng-container matColumnDef="full_name">
-                     <th mat-header-cell *matHeaderCellDef>Nombre</th>
-                     <td mat-cell *matCellDef="let client">{{ client.full_name }}</td>
-                   </ng-container>
+              <ng-container matColumnDef="type_document">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Tipo Doc.</th>
+                <td mat-cell *matCellDef="let client" class="table-cell">
+                  <span class="document-chip">{{ client.type_document }}</span>
+                </td>
+              </ng-container>
 
-                   <ng-container matColumnDef="full_last_name">
-                     <th mat-header-cell *matHeaderCellDef>Apellidos</th>
-                     <td mat-cell *matCellDef="let client">{{ client.full_last_name }}</td>
-                   </ng-container>
+              <ng-container matColumnDef="number_document">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Número Doc.</th>
+                <td mat-cell *matCellDef="let client" class="table-cell">{{ client.number_document }}</td>
+              </ng-container>
 
-                   <ng-container matColumnDef="type_document">
-                     <th mat-header-cell *matHeaderCellDef>Tipo Doc.</th>
-                     <td mat-cell *matCellDef="let client">{{ client.type_document }}</td>
-                   </ng-container>
+              <ng-container matColumnDef="uniqueCode">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Código Único</th>
+                <td mat-cell *matCellDef="let client" class="table-cell">
+                  <span class="code-chip">{{ client.uniqueCode }}</span>
+                </td>
+              </ng-container>
 
-                   <ng-container matColumnDef="number_document">
-                     <th mat-header-cell *matHeaderCellDef>Nº Documento</th>
-                     <td mat-cell *matCellDef="let client">{{ client.number_document }}</td>
-                   </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="table-header">Acciones</th>
+                <td mat-cell *matCellDef="let client" class="table-cell">
+                  <div class="action-buttons">
+                    <button mat-icon-button color="accent" (click)="viewClientDetails(client.uniqueCode)" class="action-button details-button" matTooltip="Ver Detalles">
+                      <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button color="primary" (click)="viewClientProducts(client.uniqueCode)" class="action-button products-button" matTooltip="Ver Productos">
+                      <mat-icon>inventory</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" (click)="deleteClient(client)" class="action-button delete-button" matTooltip="Eliminar Cliente">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </ng-container>
 
-                   <ng-container matColumnDef="uniqueCode">
-                     <th mat-header-cell *matHeaderCellDef>Código Único</th>
-                     <td mat-cell *matCellDef="let client">{{ client.uniqueCode }}</td>
-                   </ng-container>
-
-                   <ng-container matColumnDef="actions">
-                     <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                     <td mat-cell *matCellDef="let client">
-                       <button mat-icon-button color="primary" (click)="viewClientDetails(client.uniqueCode)">
-                         <mat-icon>visibility</mat-icon>
-                       </button>
-                       <button mat-icon-button color="accent" (click)="viewClientProducts(client.uniqueCode)">
-                         <mat-icon>inventory</mat-icon>
-                       </button>
-                       <button mat-icon-button color="warn" (click)="deleteClient(client)">
-                         <mat-icon>delete</mat-icon>
-                       </button>
-                     </td>
-                   </ng-container>
-
-                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                 </table>
-               </div>
-            </mat-card-content>
-          </mat-card>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header-row"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+            </table>
+          </div>
         </div>
       </mat-sidenav-content>
     </mat-sidenav-container>
@@ -155,156 +163,351 @@ import { User } from '../../../shared/models/user.model';
   styles: [`
     .sidenav-container {
       height: 100vh;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
     }
+    
     .sidenav {
-      width: 220px;
-      background: #fff;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+      width: 280px;
+      background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+      border-right: 1px solid #00ff88;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
     }
-    .mat-toolbar.mat-primary {
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+    
+    .sidenav-toolbar {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
     }
+    
+    .menu-icon {
+      color: #000;
+    }
+    
+    .nav-list {
+      padding: 16px 0;
+    }
+    
+    .nav-item {
+      margin: 4px 16px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      color: #e0e0e0;
+    }
+    
+    .nav-item:hover {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+      color: #00ff88;
+      transform: translateX(8px);
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+    }
+    
+    .nav-icon {
+      margin-right: 12px;
+    }
+    
+    .main-toolbar {
+      background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%);
+      color: #00ff88;
+      border-bottom: 2px solid #00ff88;
+      box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+    }
+    
+    .menu-button {
+      color: #00ff88;
+      margin-right: 16px;
+    }
+    
+    .toolbar-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
     .spacer {
       flex: 1 1 auto;
     }
+    
+    .user-info {
+      color: #e0e0e0;
+      margin-right: 16px;
+      font-size: 0.9rem;
+    }
+    
+    .user-menu-button {
+      color: #00ff88;
+    }
+    
+    .user-menu {
+      background: #2a2a2a;
+      border: 1px solid #00ff88;
+    }
+    
+    .menu-item {
+      color: #e0e0e0;
+    }
+    
+    .menu-item:hover {
+      background: rgba(0, 255, 136, 0.1);
+      color: #00ff88;
+    }
+    
     .content {
-      padding: 24px 8px;
+      padding: 32px 24px;
       min-height: calc(100vh - 64px);
       background: transparent;
     }
-    mat-card {
-      max-width: 1200px;
-      margin: 0 auto 24px auto;
-      border-radius: 18px;
-      box-shadow: 0 4px 24px rgba(33,150,243,0.10), 0 1.5px 4px rgba(0,0,0,0.04);
-      transition: box-shadow 0.3s;
-      background: #fff;
+    
+    .header-section {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.8s ease;
     }
-    mat-card:hover {
-      box-shadow: 0 8px 32px rgba(33,150,243,0.18), 0 2px 8px rgba(0,0,0,0.08);
-    }
-    mat-card-header {
+    
+    .page-title {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
-      border-radius: 18px 18px 0 0;
-      background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
-      padding: 16px 24px;
+      justify-content: center;
+      gap: 16px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 16px 0;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 50%, #00ff88 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    mat-card-title {
+    
+    .title-icon {
+      font-size: 2.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      color: #00ff88;
+    }
+    
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: #b0b0b0;
+      margin: 0;
+      font-weight: 300;
+    }
+    
+    .actions-section {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.3rem;
+      justify-content: center;
+      margin-bottom: 32px;
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+    
+    .create-button {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
       font-weight: 600;
-      color: #1976d2;
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+      transition: all 0.3s ease;
+      font-size: 1rem;
     }
+    
+    .create-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 255, 136, 0.4);
+    }
+    
+    .table-container {
+      background: rgba(26, 26, 26, 0.8);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 136, 0.1);
+      animation: fadeInUp 0.8s ease 0.4s both;
+    }
+    
     .loading-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px;
-      text-align: center;
+      padding: 60px 20px;
+      color: #00ff88;
     }
+    
+    .loading-spinner {
+      margin-bottom: 16px;
+    }
+    
+    .loading-text {
+      font-size: 1.1rem;
+      color: #b0b0b0;
+      margin: 0;
+    }
+    
     .empty-state {
       text-align: center;
-      color: #888;
-      padding: 40px 0;
+      padding: 60px 20px;
+      color: #b0b0b0;
     }
-    .empty-state mat-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-      color: #90caf9;
+    
+    .empty-icon {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+      color: #666;
+      margin-bottom: 16px;
     }
-    .table-container {
-      overflow-x: auto;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(33,150,243,0.06);
-      background: #fafbfc;
-      padding: 8px 0;
-      animation: fadeIn 0.5s;
+    
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin: 16px 0 8px 0;
+      color: #e0e0e0;
     }
-    table.mat-table {
-      min-width: 800px;
-      border-radius: 12px;
-      background: #fff;
-      overflow: hidden;
-      animation: fadeIn 0.7s;
-    }
-    th.mat-header-cell, td.mat-cell {
-      padding: 12px 16px;
+    
+    .empty-state p {
       font-size: 1rem;
-      border-bottom: 1px solid #e3e3e3;
+      margin: 0 0 24px 0;
+      color: #b0b0b0;
     }
-    th.mat-header-cell {
-      background: #e3f2fd;
-      color: #1976d2;
-      font-weight: 700;
+    
+    .empty-action-button {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
     }
-    td.mat-cell {
-      transition: background 0.2s;
+    
+    .client-table {
+      width: 100%;
+      background: transparent;
+      border-radius: 12px;
+      overflow: hidden;
     }
-    tr.mat-row:hover td.mat-cell {
-      background: #e3f2fd44;
-      transition: background 0.2s;
+    
+    .table-header-row {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
     }
-    .mat-icon-button {
-      transition: background 0.2s, color 0.2s;
-      border-radius: 50%;
-      margin: 0 2px;
+    
+    .table-header {
+      color: #000;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 16px 12px;
+      text-align: left;
     }
-    .mat-icon-button:hover {
-      background: #e3f2fd;
-      color: #1976d2;
-      transform: scale(1.12);
-      box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+    
+    .table-row {
+      background: rgba(42, 42, 42, 0.6);
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.1);
     }
-    .mat-icon-button[color="warn"]:hover {
-      background: #ffebee;
-      color: #d32f2f;
+    
+    .table-row:hover {
+      background: rgba(0, 255, 136, 0.05);
+      transform: scale(1.01);
     }
-    .mat-icon-button[color="accent"]:hover {
-      background: #fce4ec;
-      color: #c2185b;
+    
+    .table-cell {
+      color: #e0e0e0;
+      padding: 16px 12px;
+      font-size: 0.9rem;
     }
+    
+    .document-chip, .code-chip {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 204, 102, 0.2) 100%);
+      color: #00ff88;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    
+    .action-button {
+      transition: all 0.3s ease;
+    }
+    
+    .details-button {
+      color: #00ff88;
+    }
+    
+    .details-button:hover {
+      background: rgba(0, 255, 136, 0.1);
+      transform: scale(1.1);
+    }
+    
+    .products-button {
+      color: #ff6b35;
+    }
+    
+    .products-button:hover {
+      background: rgba(255, 107, 53, 0.1);
+      transform: scale(1.1);
+    }
+    
+    .delete-button {
+      color: #ff4757;
+    }
+    
+    .delete-button:hover {
+      background: rgba(255, 71, 87, 0.1);
+      transform: scale(1.1);
+    }
+    
     @media (max-width: 900px) {
-      mat-card {
-        margin: 0 4px 24px 4px;
+      .content {
+        padding: 24px 16px;
+      }
+      .page-title {
+        font-size: 2rem;
       }
       .table-container {
-        padding: 0;
-      }
-      table.mat-table {
-        min-width: 600px;
+        padding: 16px;
       }
     }
+    
     @media (max-width: 600px) {
       .content {
-        padding: 8px 2px;
+        padding: 16px 8px;
       }
-      mat-card-header {
+      .page-title {
+        font-size: 1.8rem;
         flex-direction: column;
-        align-items: flex-start;
-        padding: 12px 8px;
+        gap: 8px;
       }
-      table.mat-table {
-        min-width: 400px;
+      .table-container {
+        padding: 12px;
       }
-      th.mat-header-cell, td.mat-cell {
-        padding: 8px 6px;
-        font-size: 0.95rem;
+      .action-buttons {
+        flex-direction: column;
+        gap: 4px;
       }
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   `]
 })
