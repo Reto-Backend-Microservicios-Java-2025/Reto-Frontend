@@ -240,8 +240,18 @@ export class ProductEditDialogComponent implements OnInit {
       } else {
         // Create new product
         const formValue = this.productForm.value;
-        let selectedClient = this.clients.find(c => String(c.id) === formValue.clientId || String(c.uniqueCode) === formValue.clientId);
+        console.log('Form value clientId:', formValue.clientId);
+        console.log('Type of formValue.clientId:', typeof formValue.clientId);
+        console.log('Available clients:', this.clients);
+        
+        let selectedClient = this.clients.find(c => {
+          console.log(`Comparing client ${c.id} (${typeof c.id}) with formValue.clientId ${formValue.clientId} (${typeof formValue.clientId})`);
+          return c.id === formValue.clientId || String(c.id) === String(formValue.clientId);
+        });
+        
         if (!selectedClient) {
+          console.error('Client not found. Available clients:', this.clients);
+          console.error('Looking for clientId:', formValue.clientId);
           this.isLoading = false;
           this.snackBar.open('Cliente no encontrado', 'Cerrar', { duration: 5000 });
           return;
