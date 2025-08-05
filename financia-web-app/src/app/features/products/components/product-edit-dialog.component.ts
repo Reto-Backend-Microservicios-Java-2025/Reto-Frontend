@@ -34,133 +34,310 @@ export interface ProductDialogData {
     MatSelectModule
   ],
   template: `
-    <h2 mat-dialog-title>
-      <mat-icon>{{ data.isEdit ? 'edit' : 'add' }}</mat-icon>
-      {{ data.isEdit ? 'Editar Producto' : 'Crear Producto' }}
-    </h2>
+    <div class="dialog-container">
+      <div class="dialog-header">
+        <h2 class="dialog-title">
+          <mat-icon class="title-icon">{{ data.isEdit ? 'edit' : 'add' }}</mat-icon>
+          {{ data.isEdit ? 'Editar Producto' : 'Crear Producto' }}
+        </h2>
+        <button mat-icon-button (click)="onCancel()" class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
 
-    <mat-dialog-content>
-      <form [formGroup]="productForm">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nombre del Producto</mat-label>
-          <input matInput formControlName="name" required>
-          <mat-icon matSuffix>inventory</mat-icon>
-          <mat-error *ngIf="productForm.get('name')?.hasError('required')">
-            El nombre es requerido
-          </mat-error>
-          <mat-error *ngIf="productForm.get('name')?.hasError('minlength')">
-            El nombre debe tener al menos 3 caracteres
-          </mat-error>
-        </mat-form-field>
+      <div class="dialog-content">
+        <form [formGroup]="productForm" (ngSubmit)="onSave()" class="product-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nombre del Producto</mat-label>
+              <input matInput formControlName="name" required class="form-input">
+              <mat-icon matSuffix class="field-icon">inventory</mat-icon>
+              <mat-error *ngIf="productForm.get('name')?.hasError('required')" class="error-text">
+                El nombre es requerido
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Tipo de Producto</mat-label>
-          <mat-select formControlName="productType" required>
-            <mat-option value="SAVINGS_ACCOUNT">Cuenta de Ahorros</mat-option>
-            <mat-option value="CHECKING_ACCOUNT">Cuenta Corriente</mat-option>
-            <mat-option value="CREDIT_CARD">Tarjeta de Crédito</mat-option>
-            <mat-option value="LOAN">Préstamo</mat-option>
-            <mat-option value="INVESTMENT">Inversión</mat-option>
-          </mat-select>
-          <mat-error *ngIf="productForm.get('productType')?.hasError('required')">
-            Seleccione un tipo de producto
-          </mat-error>
-        </mat-form-field>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Tipo de Producto</mat-label>
+              <mat-select formControlName="productType" required class="form-select">
+                <mat-option value="SAVINGS">Ahorro</mat-option>
+                <mat-option value="CHECKING">Corriente</mat-option>
+                <mat-option value="CREDIT">Crédito</mat-option>
+                <mat-option value="INVESTMENT">Inversión</mat-option>
+              </mat-select>
+              <mat-icon matSuffix class="field-icon">category</mat-icon>
+              <mat-error *ngIf="productForm.get('productType')?.hasError('required')" class="error-text">
+                El tipo de producto es requerido
+              </mat-error>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Saldo</mat-label>
-          <input matInput type="number" formControlName="balance" step="0.01" min="0" required>
-          <span matTextPrefix>$&nbsp;</span>
-          <mat-error *ngIf="productForm.get('balance')?.hasError('required')">
-            El saldo es requerido
-          </mat-error>
-          <mat-error *ngIf="productForm.get('balance')?.hasError('min')">
-            El saldo debe ser mayor o igual a 0
-          </mat-error>
-        </mat-form-field>
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Saldo</mat-label>
+              <input matInput type="number" formControlName="balance" required class="form-input">
+              <mat-icon matSuffix class="field-icon">attach_money</mat-icon>
+              <mat-error *ngIf="productForm.get('balance')?.hasError('required')" class="error-text">
+                El saldo es requerido
+              </mat-error>
+              <mat-error *ngIf="productForm.get('balance')?.hasError('min')" class="error-text">
+                El saldo debe ser mayor a 0
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-        <mat-form-field appearance="outline" class="full-width" *ngIf="!data.isEdit">
-          <mat-label>Cliente</mat-label>
-          <mat-select formControlName="clientId" required>
-            <mat-option *ngFor="let client of clients" [value]="client.id">
-              {{ client.full_name }} {{ client.full_last_name }} ({{ client.number_document }}) - ID: {{ client.id }}
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="productForm.get('clientId')?.hasError('required')">
-            Seleccione un cliente
-          </mat-error>
-        </mat-form-field>
-      </form>
-    </mat-dialog-content>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Cliente</mat-label>
+              <mat-select formControlName="clientId" required class="form-select">
+                <mat-option *ngFor="let client of clients" [value]="client.id" class="client-option">
+                  {{ client.full_name }} {{ client.full_last_name }} ({{ client.uniqueCode }}) - ID: {{ client.id }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix class="field-icon">person</mat-icon>
+              <mat-error *ngIf="productForm.get('clientId')?.hasError('required')" class="error-text">
+                El cliente es requerido
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">Cancelar</button>
-      <button mat-raised-button color="primary" 
-              [disabled]="productForm.invalid || isLoading"
-              (click)="onSave()">
-        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
-        <span *ngIf="!isLoading">{{ data.isEdit ? 'Actualizar' : 'Crear' }}</span>
-      </button>
-    </mat-dialog-actions>
+          <div class="form-actions">
+            <button mat-button type="button" (click)="onCancel()" class="cancel-button">
+              <mat-icon>cancel</mat-icon>
+              Cancelar
+            </button>
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="productForm.invalid || isLoading" class="submit-button">
+              <mat-spinner diameter="20" *ngIf="isLoading" class="button-spinner"></mat-spinner>
+              <mat-icon *ngIf="!isLoading" class="button-icon">{{ data.isEdit ? 'save' : 'add' }}</mat-icon>
+              <span *ngIf="!isLoading" class="button-text">{{ data.isEdit ? 'Actualizar' : 'Crear' }} Producto</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   `,
   styles: [`
-    h2[mat-dialog-title] {
+    .dialog-container {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 136, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .dialog-header {
+      background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%);
+      padding: 20px 24px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 1.3rem;
+      justify-content: space-between;
+      border-bottom: 2px solid #00ff88;
+    }
+    
+    .dialog-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.4rem;
       font-weight: 600;
-      color: #1976d2;
-      background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
-      border-radius: 18px 18px 0 0;
-      padding: 16px 24px;
-      margin: -24px -24px 16px -24px;
-      box-shadow: 0 2px 8px rgba(33,150,243,0.08);
-      animation: fadeIn 0.7s;
+      margin: 0;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    mat-dialog-content {
-      padding: 24px 8px 8px 8px;
-      background: #fff;
-      border-radius: 0 0 18px 18px;
-      box-shadow: 0 4px 24px rgba(33,150,243,0.10), 0 1.5px 4px rgba(0,0,0,0.04);
-      animation: fadeIn 0.7s;
+    
+    .title-icon {
+      color: #00ff88;
+      font-size: 1.4rem;
+      width: 1.4rem;
+      height: 1.4rem;
     }
-    form {
+    
+    .close-button {
+      color: #00ff88;
+      transition: all 0.3s ease;
+    }
+    
+    .close-button:hover {
+      background: rgba(0, 255, 136, 0.1);
+      transform: scale(1.1);
+    }
+    
+    .dialog-content {
+      padding: 24px;
+      background: rgba(26, 26, 26, 0.8);
+    }
+    
+    .product-form {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
     }
+    
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    
     .full-width {
       width: 100%;
     }
-    .mat-raised-button {
-      transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
-      border-radius: 8px;
+    
+    .half-width {
+      width: calc(50% - 8px);
     }
-    .mat-raised-button:hover {
-      background: #e3f2fd;
-      color: #1976d2;
-      transform: scale(1.06);
-      box-shadow: 0 2px 8px rgba(33,150,243,0.10);
+    
+    .form-input, .form-select {
+      color: #e0e0e0;
     }
-    mat-dialog-actions {
+    
+    .field-icon {
+      color: #00ff88;
+    }
+    
+    .error-text {
+      color: #ff4757;
+      font-size: 0.85rem;
+    }
+    
+    .client-option {
+      color: #e0e0e0;
+      padding: 8px 16px;
+    }
+    
+    .form-actions {
       display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 16px;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      gap: 16px;
     }
+    
+    .cancel-button {
+      color: #b0b0b0;
+      border: 1px solid #666;
+      padding: 12px 24px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .cancel-button:hover {
+      color: #e0e0e0;
+      border-color: #00ff88;
+      background: rgba(0, 255, 136, 0.05);
+    }
+    
+    .submit-button {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      padding: 12px 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .submit-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 255, 136, 0.4);
+    }
+    
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .button-spinner {
+      margin-right: 8px;
+    }
+    
+    .button-icon {
+      margin-right: 8px;
+    }
+    
+    .button-text {
+      font-weight: 600;
+    }
+    
+    /* Material Form Field Customization */
+    ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+      color: rgba(0, 255, 136, 0.3);
+    }
+    
+    ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+      color: #00ff88;
+    }
+    
+    ::ng-deep .mat-form-field-label {
+      color: #b0b0b0;
+    }
+    
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+      color: #00ff88;
+    }
+    
+    ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+      color: #00ff88;
+    }
+    
+    ::ng-deep .mat-select-value {
+      color: #e0e0e0;
+    }
+    
+    ::ng-deep .mat-select-arrow {
+      color: #00ff88;
+    }
+    
+    ::ng-deep .mat-option {
+      color: #e0e0e0;
+    }
+    
+    ::ng-deep .mat-option:hover {
+      background: rgba(0, 255, 136, 0.1);
+      color: #00ff88;
+    }
+    
+    ::ng-deep .mat-option.mat-selected {
+      background: rgba(0, 255, 136, 0.2);
+      color: #00ff88;
+    }
+    
     @media (max-width: 600px) {
-      h2[mat-dialog-title] {
-        font-size: 1.1rem;
-        padding: 12px 8px;
+      .dialog-header {
+        padding: 16px 20px;
       }
-      mat-dialog-content {
-        padding: 12px 2px 8px 2px;
+      
+      .dialog-title {
+        font-size: 1.2rem;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
       }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
+      
+      .dialog-content {
+        padding: 20px;
+      }
+      
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      .half-width {
+        width: 100%;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+        gap: 16px;
+      }
     }
   `]
 })
