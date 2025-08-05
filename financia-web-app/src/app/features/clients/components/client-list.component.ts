@@ -388,6 +388,21 @@ export class ClientListComponent implements OnInit {
     this.router.navigate(['/products'], { queryParams: { clientId: client.id } });
   }
 
+  // Método temporal para probar el endpoint de detalles
+  testClientDetails(): void {
+    const testEncryptedCode = 'shm/UtMDp4CBtW6OA20cIA==';
+    console.log('Testing client details with encrypted code:', testEncryptedCode);
+    
+    this.clientService.getClientByEncryptedCode(testEncryptedCode).subscribe({
+      next: (client) => {
+        console.log('✅ Client details found:', client);
+      },
+      error: (error) => {
+        console.error('❌ Error getting client details:', error);
+      }
+    });
+  }
+
   deleteClient(client: Client): void {
     if (confirm(`¿Seguro que deseas eliminar al cliente ${client.full_name} ${client.full_last_name}?`)) {
       if (!client.id || client.id <= 0) {
