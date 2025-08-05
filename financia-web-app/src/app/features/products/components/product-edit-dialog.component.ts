@@ -246,50 +246,31 @@ export class ProductEditDialogComponent implements OnInit {
           this.snackBar.open('Cliente no encontrado', 'Cerrar', { duration: 5000 });
           return;
         }
-        try {
-          console.log('Selected client:', selectedClient);
-          console.log('Using uniqueCode:', selectedClient.uniqueCode);
-          const clientWithProducts = await this.clientService.getClientByEncryptedCode(String(selectedClient.uniqueCode)).toPromise();
-          console.log('Client with products response:', clientWithProducts);
-          if (clientWithProducts && typeof clientWithProducts.id === 'number' && clientWithProducts.id > 0) {
-            console.log('Valid clientId obtained:', clientWithProducts.id);
-            const createRequest: CreateProductRequest = {
-              clientId: clientWithProducts.id,
-              productType: formValue.productType,
-              name: formValue.name,
-              balance: Number(formValue.balance)
-            };
-            console.log('Create request:', createRequest);
-            if (!createRequest.productType) {
-              console.error('Invalid productType:', createRequest.productType);
-              this.isLoading = false;
-              this.snackBar.open('Error: Tipo de producto requerido', 'Cerrar', { duration: 5000 });
-              return;
-            }
-            this.productService.createProduct(createRequest).subscribe({
-              next: (product) => {
-                this.isLoading = false;
-                this.snackBar.open('Producto creado exitosamente', 'Cerrar', { duration: 3000 });
-                this.dialogRef.close(true);
-              },
-              error: (error) => {
-                this.isLoading = false;
-                console.error('Error creating product:', error);
-                this.snackBar.open('Error al crear el producto. Verifique los datos.', 'Cerrar', { duration: 5000 });
-              }
-            });
-          } else {
-            console.error('Invalid client response:', clientWithProducts);
-            this.isLoading = false;
-            this.snackBar.open('No se pudo obtener el ID real del cliente. Verifique que el código encriptado sea válido.', 'Cerrar', { duration: 5000 });
-            return;
-          }
-        } catch (error) {
-          console.error('Error getting client by encrypted code:', error);
+        const createRequest: CreateProductRequest = {
+          clientId: selectedClient.uniqueCode,
+          productType: formValue.productType,
+          name: formValue.name,
+          balance: Number(formValue.balance)
+        };
+        if (!createRequest.productType) {
+          console.error('Invalid productType:', createRequest.productType);
           this.isLoading = false;
-          this.snackBar.open('Error al obtener el cliente. El código encriptado puede ser inválido.', 'Cerrar', { duration: 5000 });
+          this.snackBar.open('Error: Tipo de producto requerido', 'Cerrar', { duration: 5000 });
           return;
         }
+        console.log('Create request:', createRequest);
+        this.productService.createProduct(createRequest).subscribe({
+          next: (product) => {
+            this.isLoading = false;
+            this.snackBar.open('Producto creado exitosamente', 'Cerrar', { duration: 3000 });
+            this.dialogRef.close(true);
+          },
+          error: (error) => {
+            this.isLoading = false;
+            console.error('Error creating product:', error);
+            this.snackBar.open('Error al crear el producto. Verifique los datos.', 'Cerrar', { duration: 5000 });
+          }
+        });
       }
     } else {
       console.log('Form is invalid:', this.productForm.errors);
