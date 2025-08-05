@@ -36,255 +36,391 @@ import { ProductEditDialogComponent } from './product-edit-dialog.component';
     MatDialogModule,
     MatChipsModule
   ],
-  template: `
-    <mat-sidenav-container class="sidenav-container">
-      <mat-sidenav #drawer class="sidenav" fixedInViewport mode="over">
-        <mat-toolbar>Menú</mat-toolbar>
-        <mat-nav-list>
-          <a mat-list-item (click)="navigateTo('/dashboard')" [class.active]="isActiveRoute('/dashboard')">
-            <mat-icon matListItemIcon>dashboard</mat-icon>
-            <span matListItemTitle>Dashboard</span>
-          </a>
-          <a mat-list-item (click)="navigateTo('/clients')" [class.active]="isActiveRoute('/clients')">
-            <mat-icon matListItemIcon>people</mat-icon>
-            <span matListItemTitle>Clientes</span>
-          </a>
-          <a mat-list-item (click)="navigateTo('/products')" [class.active]="isActiveRoute('/products')">
-            <mat-icon matListItemIcon>inventory</mat-icon>
-            <span matListItemTitle>Productos</span>
-          </a>
-        </mat-nav-list>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <mat-toolbar color="primary">
-          <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
-            <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-          </button>
-          <span>Financia App - Productos</span>
-          <span class="spacer"></span>
-          <span *ngIf="currentUser">Hola, {{ currentUser.firstName }}</span>
-          <button mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon>account_circle</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="logout()">
-              <mat-icon>logout</mat-icon>
-              <span>Cerrar Sesión</span>
-            </button>
-          </mat-menu>
-        </mat-toolbar>
-
-        <div class="content">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>inventory</mat-icon>
-                Lista de Productos
-                <mat-chip *ngIf="clientFilter" class="client-filter-chip">
-                  Cliente ID: {{ clientFilter }}
-                  <button matChipRemove (click)="clearClientFilter()">
-                    <mat-icon>cancel</mat-icon>
-                  </button>
-                </mat-chip>
-              </mat-card-title>
-              <div class="spacer"></div>
-              <button mat-raised-button color="primary" (click)="openCreateDialog()">
-                <mat-icon>add</mat-icon>
-                Nuevo Producto
-              </button>
-            </mat-card-header>
-
-            <mat-card-content>
-              <div *ngIf="isLoading" class="loading-container">
-                <mat-spinner></mat-spinner>
-                <p>Cargando productos...</p>
-              </div>
-
-              <div *ngIf="!isLoading && products.length === 0" class="empty-state">
-                <mat-icon>inventory_2</mat-icon>
-                <h3>No hay productos registrados</h3>
-                <p>Comienza agregando tu primer producto</p>
-                <button mat-raised-button color="primary" (click)="openCreateDialog()">
-                  <mat-icon>add</mat-icon>
-                  Crear Producto
-                </button>
-              </div>
-
-              <div *ngIf="!isLoading && products.length > 0" class="table-container">
-                <table mat-table [dataSource]="products" class="mat-elevation-8">
-                  <ng-container matColumnDef="id">
-                    <th mat-header-cell *matHeaderCellDef>ID</th>
-                    <td mat-cell *matCellDef="let product">{{ product.id }}</td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="name">
-                    <th mat-header-cell *matHeaderCellDef>Nombre</th>
-                    <td mat-cell *matCellDef="let product">{{ product.name }}</td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="description">
-                    <th mat-header-cell *matHeaderCellDef>Descripción</th>
-                    <td mat-cell *matCellDef="let product" class="description-cell">
-                      {{ product.description | slice:0:50 }}{{ product.description.length > 50 ? '...' : '' }}
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="price">
-                    <th mat-header-cell *matHeaderCellDef>Precio</th>
-                    <td mat-cell *matCellDef="let product" class="price-cell">
-                      {{ product.price | currency:'USD':'symbol':'1.2-2' }}
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="clientId">
-                    <th mat-header-cell *matHeaderCellDef>Cliente ID</th>
-                    <td mat-cell *matCellDef="let product">{{ product.clientId }}</td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="createdAt">
-                    <th mat-header-cell *matHeaderCellDef>Fecha Creación</th>
-                    <td mat-cell *matCellDef="let product">
-                      {{ product.createdAt | date:'dd/MM/yyyy' }}
-                    </td>
-                  </ng-container>
-
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                    <td mat-cell *matCellDef="let product">
-                      <button mat-icon-button color="primary" (click)="openEditDialog(product)">
-                        <mat-icon>edit</mat-icon>
-                      </button>
-                      <button mat-icon-button color="warn" (click)="deleteProduct(product.id)">
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </td>
-                  </ng-container>
-
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                </table>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </div>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
-  `,
+  templateUrl: './product-list.component.html',
   styles: [`
     .sidenav-container {
       height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
     }
 
     .sidenav {
-      width: 200px;
+      width: 280px;
+      background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 100%);
+      border-right: 1px solid #00ff88;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
     }
 
-    .sidenav .mat-toolbar {
-      background: inherit;
+    .sidenav-toolbar {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
     }
 
-    .mat-toolbar.mat-primary {
-      position: sticky;
-      top: 0;
-      z-index: 1;
+    .menu-icon {
+      color: #000;
+    }
+
+    .nav-list {
+      padding: 16px 0;
+    }
+
+    .nav-item {
+      margin: 4px 16px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      color: #ffffff;
+    }
+
+    .nav-item:hover {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%);
+      color: #00ff88;
+      transform: translateX(8px);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+    }
+
+    .nav-icon {
+      margin-right: 12px;
+    }
+
+    .main-toolbar {
+      background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%);
+      color: #00ff88;
+      border-bottom: 2px solid #00ff88;
+      box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+    }
+
+    .menu-button {
+      color: #00ff88;
+      margin-right: 16px;
+    }
+
+    .toolbar-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .spacer {
       flex: 1 1 auto;
     }
 
+    .user-info {
+      color: #ffffff;
+      margin-right: 16px;
+      font-size: 0.9rem;
+    }
+
+    .user-menu-button {
+      color: #00ff88;
+    }
+
+    .user-menu {
+      background: #2a2a2a;
+      border: 1px solid #00ff88;
+    }
+
+    .menu-item {
+      color: #ffffff;
+    }
+
+    .menu-item:hover {
+      background: rgba(0, 255, 136, 0.1);
+      color: #00ff88;
+    }
+
     .content {
-      padding: 20px;
+      padding: 32px 24px;
       min-height: calc(100vh - 64px);
-      background-color: #f5f5f5;
+      background: transparent;
     }
 
-    mat-card {
-      max-width: 1400px;
-      margin: 0 auto;
+    .header-section {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.8s ease;
     }
 
-    mat-card-header {
+    .page-title {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
+      justify-content: center;
+      gap: 16px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 16px 0;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 50%, #00ff88 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    mat-card-title {
+    .title-icon {
+      font-size: 2.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      color: #00ff88;
+    }
+
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: #b0b0b0;
+      margin: 0;
+      font-weight: 300;
+    }
+
+    .actions-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    .filter-section {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .client-filter-chip {
-      margin-left: 16px;
+      background: linear-gradient(90deg, rgba(255, 107, 53, 0.2) 0%, rgba(255, 140, 66, 0.2) 100%);
+      color: #ff6b35;
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      font-weight: 500;
+    }
+
+    .chip-remove {
+      color: #ff6b35;
+    }
+
+    .create-button {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .create-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 255, 136, 0.4);
+    }
+
+    .table-container {
+      background: rgba(26, 26, 26, 0.8);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 136, 0.1);
+      animation: fadeInUp 0.8s ease 0.4s both;
     }
 
     .loading-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px;
+      justify-content: center;
+      padding: 60px 20px;
+      color: #00ff88;
     }
 
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
-      text-align: center;
-    }
-
-    .empty-state mat-icon {
-      font-size: 64px;
-      width: 64px;
-      height: 64px;
-      color: #ccc;
+    .loading-spinner {
       margin-bottom: 16px;
     }
 
-    .table-container {
+    .loading-text {
+      font-size: 1.1rem;
+      color: #b0b0b0;
+      margin: 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #b0b0b0;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin: 16px 0 8px 0;
+      color: #e0e0e0;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      margin: 0 0 24px 0;
+      color: #b0b0b0;
+    }
+
+    .empty-action-button {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .product-table {
       width: 100%;
-      overflow-x: auto;
+      background: transparent;
+      border-radius: 12px;
+      overflow: hidden;
     }
 
-    table {
-      width: 100%;
+    .table-header-row {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
     }
 
-    .description-cell {
-      max-width: 200px;
+    .table-header {
+      color: #000;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 16px 12px;
+      text-align: left;
     }
 
-    .price-cell {
-      text-align: right;
+    .table-row {
+      background: rgba(42, 42, 42, 0.6);
+      transition: all 0.3s ease;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+    }
+
+    .table-row:hover {
+      background: rgba(0, 255, 136, 0.05);
+      transform: scale(1.01);
+    }
+
+    .table-cell {
+      color: #e0e0e0;
+      padding: 16px 12px;
+      font-size: 0.9rem;
+    }
+
+    .product-type-chip {
+      background: linear-gradient(90deg, rgba(255, 107, 53, 0.2) 0%, rgba(255, 140, 66, 0.2) 100%);
+      color: #ff6b35;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
       font-weight: 500;
-      color: #2e7d32;
+      border: 1px solid rgba(255, 107, 53, 0.3);
     }
 
-    .active {
-      background-color: rgba(63, 81, 181, 0.1);
-      color: #3f51b5;
+    .balance-amount {
+      color: #00ff88;
+      font-weight: 600;
+      font-size: 1rem;
     }
 
-    @media (max-width: 768px) {
+    .client-id-chip {
+      background: linear-gradient(90deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 204, 102, 0.2) 100%);
+      color: #00ff88;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .action-button {
+      transition: all 0.3s ease;
+    }
+
+    .edit-button {
+      color: #00ff88;
+    }
+
+    .edit-button:hover {
+      background: rgba(0, 255, 136, 0.1);
+      transform: scale(1.1);
+    }
+
+    .delete-button {
+      color: #ff4757;
+    }
+
+    .delete-button:hover {
+      background: rgba(255, 71, 87, 0.1);
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 900px) {
       .content {
-        padding: 10px;
+        padding: 24px 16px;
       }
-      
-      mat-card-header {
+      .page-title {
+        font-size: 2rem;
+      }
+      .actions-section {
         flex-direction: column;
-        align-items: stretch;
         gap: 16px;
+        align-items: stretch;
+      }
+      .table-container {
+        padding: 16px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .content {
+        padding: 16px 8px;
+      }
+      .page-title {
+        font-size: 1.8rem;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .table-container {
+        padding: 12px;
+      }
+      .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
   `]
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
-  displayedColumns: string[] = ['id', 'name', 'description', 'price', 'clientId', 'createdAt', 'actions'];
+  displayedColumns: string[] = ['id', 'name', 'productType', 'balance', 'clientId', 'actions'];
   isLoading = false;
   currentUser: any = null;
   clientFilter: number | null = null;
@@ -308,6 +444,10 @@ export class ProductListComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['clientId']) {
         this.clientFilter = +params['clientId'];
+      } else if (params['uniqueCode']) {
+        // If we have uniqueCode, we need to convert it to clientId
+        // For now, we'll use uniqueCode as clientId (assuming they match)
+        this.clientFilter = +params['uniqueCode'];
       }
       this.loadProducts();
     });
@@ -315,8 +455,8 @@ export class ProductListComponent implements OnInit {
 
   loadProducts(): void {
     this.isLoading = true;
-    
-    const loadOperation = this.clientFilter 
+
+    const loadOperation = this.clientFilter
       ? this.productService.getProductsByClientId(this.clientFilter)
       : this.productService.getAllProducts();
 

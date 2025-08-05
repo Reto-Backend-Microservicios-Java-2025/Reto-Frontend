@@ -25,105 +25,65 @@ import { SignUpRequest } from '../../../shared/models/user.model';
     MatIconModule,
     MatProgressSpinnerModule
   ],
-  template: `
-    <div class="auth-container">
-      <mat-card class="auth-card">
-        <mat-card-header>
-          <mat-card-title>Crear Cuenta</mat-card-title>
-          <mat-card-subtitle>Regístrate para comenzar</mat-card-subtitle>
-        </mat-card-header>
-        
-        <mat-card-content>
-          <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Nombre</mat-label>
-              <input matInput formControlName="firstName" required>
-              <mat-icon matSuffix>person</mat-icon>
-              <mat-error *ngIf="signUpForm.get('firstName')?.hasError('required')">
-                El nombre es requerido
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Apellido</mat-label>
-              <input matInput formControlName="lastName" required>
-              <mat-icon matSuffix>person</mat-icon>
-              <mat-error *ngIf="signUpForm.get('lastName')?.hasError('required')">
-                El apellido es requerido
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email" required>
-              <mat-icon matSuffix>email</mat-icon>
-              <mat-error *ngIf="signUpForm.get('email')?.hasError('required')">
-                El email es requerido
-              </mat-error>
-              <mat-error *ngIf="signUpForm.get('email')?.hasError('email')">
-                Ingresa un email válido
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Contraseña</mat-label>
-              <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required>
-              <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
-                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-              </button>
-              <mat-error *ngIf="signUpForm.get('password')?.hasError('required')">
-                La contraseña es requerida
-              </mat-error>
-              <mat-error *ngIf="signUpForm.get('password')?.hasError('minlength')">
-                La contraseña debe tener al menos 6 caracteres
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Confirmar Contraseña</mat-label>
-              <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" required>
-              <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
-                <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-              </button>
-              <mat-error *ngIf="signUpForm.get('confirmPassword')?.hasError('required')">
-                Confirma tu contraseña
-              </mat-error>
-              <mat-error *ngIf="signUpForm.hasError('passwordMismatch')">
-                Las contraseñas no coinciden
-              </mat-error>
-            </mat-form-field>
-
-            <button mat-raised-button color="primary" type="submit" 
-                    [disabled]="signUpForm.invalid || isLoading" class="full-width submit-button">
-              <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
-              <span *ngIf="!isLoading">Crear Cuenta</span>
-            </button>
-          </form>
-        </mat-card-content>
-
-        <mat-card-actions>
-          <p class="text-center">
-            ¿Ya tienes una cuenta? 
-            <a (click)="navigateToSignIn()" class="link">Inicia sesión aquí</a>
-          </p>
-        </mat-card-actions>
-      </mat-card>
-    </div>
-  `,
+  templateUrl: './sign-up.component.html',
   styles: [`
     .auth-container {
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
       padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+      pointer-events: none;
     }
 
     .auth-card {
       width: 100%;
       max-width: 400px;
-      padding: 20px;
+      background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 100%);
+      border: 2px solid #00ff88;
+      border-radius: 16px;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(0, 255, 136, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #00ff88, #00cc6a, #00ff88);
+      border-radius: 16px;
+      z-index: -1;
+      opacity: 0.3;
+      animation: borderGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes borderGlow {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.6; }
     }
 
     .full-width {
@@ -134,25 +94,154 @@ import { SignUpRequest } from '../../../shared/models/user.model';
     .submit-button {
       height: 48px;
       margin-top: 16px;
+      background: linear-gradient(45deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .submit-button:hover:not(:disabled) {
+      background: linear-gradient(45deg, #00cc6a 0%, #00ff88 100%);
+      box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .submit-button:disabled {
+      background: #333;
+      color: #666;
+      box-shadow: none;
     }
 
     .text-center {
       text-align: center;
       margin: 16px 0 0 0;
+      color: #ffffff;
     }
 
     .link {
-      color: #667eea;
+      color: #00ff88;
       cursor: pointer;
       text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
     }
 
     .link:hover {
+      color: #00cc6a;
       text-decoration: underline;
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
     }
 
     mat-card-header {
       margin-bottom: 20px;
+      text-align: center;
+    }
+
+    mat-card-title {
+      color: #00ff88;
+      font-size: 1.8rem;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+      margin-bottom: 8px;
+    }
+
+    mat-card-subtitle {
+      color: #cccccc;
+      font-size: 1rem;
+    }
+
+    /* Material Form Field Customization for Auth */
+    ::ng-deep .mat-form-field {
+      color: #ffffff;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-outline {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-outline-thick {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-label {
+      color: #cccccc;
+    }
+
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field input.mat-input-element {
+      color: #ffffff !important;
+      background-color: transparent !important;
+    }
+
+    ::ng-deep .mat-form-field textarea.mat-input-element {
+      color: #ffffff !important;
+      background-color: transparent !important;
+    }
+
+    ::ng-deep .mat-input-element {
+      color: #ffffff !important;
+      background-color: transparent !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-infix {
+      background-color: rgba(0, 255, 136, 0.05) !important;
+      border-radius: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-infix input {
+      color: #ffffff !important;
+      background-color: transparent !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-icon {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-outline-start,
+    ::ng-deep .mat-form-field .mat-form-field-outline-gap,
+    ::ng-deep .mat-form-field .mat-form-field-outline-end {
+      border-color: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-outline-thick {
+      border-color: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-outline-thick {
+      border-color: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-error {
+      color: #ff6b6b;
+    }
+
+    /* Spinner customization */
+    ::ng-deep .mat-spinner circle {
+      stroke: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-form-field input::placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-webkit-input-placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-moz-placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-ms-input-placeholder {
+      color: #666666 !important;
     }
   `]
 })
@@ -169,10 +258,8 @@ export class SignUpComponent {
     private snackBar: MatSnackBar
   ) {
     this.signUpForm = this.fb.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }
@@ -180,7 +267,7 @@ export class SignUpComponent {
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password');
     const confirmPassword = form.get('confirmPassword');
-    
+
     if (password && confirmPassword && password.value !== confirmPassword.value) {
       return { passwordMismatch: true };
     }

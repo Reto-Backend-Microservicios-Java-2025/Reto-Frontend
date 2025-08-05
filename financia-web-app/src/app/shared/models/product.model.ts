@@ -1,22 +1,20 @@
 export interface Product {
   id: number;
-  name: string;
-  description: string;
-  price: number;
   clientId: number;
-  createdAt: string;
-  updatedAt: string;
+  productType: string;
+  name: string;
+  balance: number;
 }
 
 export interface CreateProductRequest {
-  name: string;
-  description: string;
-  price: number;
   clientId: number;
+  productType: string;
+  name: string;
+  balance: number;
 }
 
 export interface UpdateProductRequest {
+  productType?: string;
   name?: string;
-  description?: string;
-  price?: number;
+  balance?: number;
 }

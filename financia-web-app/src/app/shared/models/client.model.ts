@@ -1,29 +1,42 @@
 export interface Client {
-  id: number;
-  fullName: string;
-  fullLastName: string;
-  typeDocument: string;
-  documentNumber: string;
+  id: number; // Required because ClientResource includes id
+  full_name: string;
+  full_last_name: string;
+  type_document: string;
+  number_document: string;
+  uniqueCode: string | number;
+}
+
+export interface ClientForProductSelection {
+  id: number; // Required for product creation
+  full_name: string;
+  full_last_name: string;
+  type_document: string;
+  number_document: string;
   uniqueCode: number;
 }
 
 export interface CreateClientRequest {
-  fullName: string;
-  fullLastName: string;
-  typeDocument: string;
-  documentNumber: string;
+  full_name: string;
+  full_last_name: string;
+  type_document: string;
+  number_document: string;
+  uniqueCode: string; // Changed from number to string for 16-character validation
 }
 
-export interface ClientWithProducts extends Client {
+export interface ClientWithProducts {
+  id: number;
+  full_name: string;
+  full_lastName: string;
+  type_document: string;
+  number_document: string;
+  uniqueCode: number;
   products: ClientProduct[];
 }
 
 export interface ClientProduct {
   id: number;
+  productType: string;
   name: string;
-  description: string;
-  price: number;
-  clientId: number;
-  createdAt: string;
-  updatedAt: string;
+  balance: number;
 }

@@ -1,0 +1,82 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 class="dialog-title">
+      <mat-icon class="title-icon">{{ data.isEdit ? 'edit' : 'add' }}</mat-icon>
+      {{ data.isEdit ? 'Editar Producto' : 'Crear Producto' }}
+    </h2>
+    <button mat-icon-button (click)="onCancel()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="dialog-content">
+    <form [formGroup]="productForm" (ngSubmit)="onSave()" class="product-form">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre del Producto</mat-label>
+          <input matInput formControlName="name" required class="form-input" style="color:white;">
+          <mat-icon matSuffix class="field-icon">inventory</mat-icon>
+          <mat-error *ngIf="productForm.get('name')?.hasError('required')" class="error-text">
+            El nombre es requerido
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Tipo de Producto</mat-label>
+          <mat-select formControlName="productType" required class="form-select">
+            <mat-option value="SAVINGS_ACCOUNT">Ahorro</mat-option>
+            <mat-option value="CHECKING_ACCOUNT">Corriente</mat-option>
+            <mat-option value="CREDIT_CARD">Crédito</mat-option>
+            <mat-option value="INVESTMENT">Inversión</mat-option>
+          </mat-select>
+          <mat-icon matSuffix class="field-icon">category</mat-icon>
+          <mat-error *ngIf="productForm.get('productType')?.hasError('required')" class="error-text">
+            El tipo de producto es requerido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Saldo</mat-label>
+          <input matInput type="number" formControlName="balance" required class="form-input" style="color:white;">
+          <mat-icon matSuffix class="field-icon">attach_money</mat-icon>
+          <mat-error *ngIf="productForm.get('balance')?.hasError('required')" class="error-text">
+            El saldo es requerido
+          </mat-error>
+          <mat-error *ngIf="productForm.get('balance')?.hasError('min')" class="error-text">
+            El saldo debe ser mayor a 0
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row" *ngIf="!data.isEdit">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cliente</mat-label>
+          <mat-select formControlName="clientId" required class="form-select">
+            <mat-option *ngFor="let client of clients" [value]="client.id" class="client-option">
+              {{ client.full_name }} {{ client.full_last_name }} ({{ client.uniqueCode }}) - ID: {{ client.id }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix class="field-icon">person</mat-icon>
+          <mat-error *ngIf="productForm.get('clientId')?.hasError('required')" class="error-text">
+            El cliente es requerido
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="onCancel()" class="cancel-button">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+        <button mat-raised-button color="primary" type="submit"
+                [disabled]="productForm.invalid || isLoading" class="submit-button">
+          <mat-spinner diameter="20" *ngIf="isLoading" class="button-spinner"></mat-spinner>
+          <mat-icon *ngIf="!isLoading" class="button-icon">{{ data.isEdit ? 'save' : 'add' }}</mat-icon>
+          <span *ngIf="!isLoading" class="button-text">{{ data.isEdit ? 'Actualizar' : 'Crear' }} Producto</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ProductService } from '../services/product.service';
 import { ClientService } from '../../clients/services/client.service';
 import { Product, CreateProductRequest, UpdateProductRequest } from '../../../shared/models/product.model';
-import { Client } from '../../../shared/models/client.model';
+import { ClientForProductSelection } from '../../../shared/models/client.model';
 
 export interface ProductDialogData {
   product: Product | null;
@@ -33,99 +33,276 @@ export interface ProductDialogData {
     MatProgressSpinnerModule,
     MatSelectModule
   ],
-  template: `
-    <h2 mat-dialog-title>
-      <mat-icon>{{ data.isEdit ? 'edit' : 'add' }}</mat-icon>
-      {{ data.isEdit ? 'Editar Producto' : 'Crear Producto' }}
-    </h2>
-
-    <mat-dialog-content>
-      <form [formGroup]="productForm">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nombre del Producto</mat-label>
-          <input matInput formControlName="name" required>
-          <mat-icon matSuffix>inventory</mat-icon>
-          <mat-error *ngIf="productForm.get('name')?.hasError('required')">
-            El nombre es requerido
-          </mat-error>
-          <mat-error *ngIf="productForm.get('name')?.hasError('minlength')">
-            El nombre debe tener al menos 3 caracteres
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Descripción</mat-label>
-          <textarea matInput formControlName="description" rows="3" required></textarea>
-          <mat-icon matSuffix>description</mat-icon>
-          <mat-error *ngIf="productForm.get('description')?.hasError('required')">
-            La descripción es requerida
-          </mat-error>
-          <mat-error *ngIf="productForm.get('description')?.hasError('minlength')">
-            La descripción debe tener al menos 10 caracteres
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Precio</mat-label>
-          <input matInput type="number" formControlName="price" step="0.01" min="0" required>
-          <span matTextPrefix>$&nbsp;</span>
-          <mat-error *ngIf="productForm.get('price')?.hasError('required')">
-            El precio es requerido
-          </mat-error>
-          <mat-error *ngIf="productForm.get('price')?.hasError('min')">
-            El precio debe ser mayor a 0
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Cliente</mat-label>
-          <mat-select formControlName="clientId" required>
-            <mat-option *ngFor="let client of clients" [value]="client.id">
-              {{ client.fullName }} {{ client.fullLastName }} ({{ client.documentNumber }})
-            </mat-option>
-          </mat-select>
-          <mat-error *ngIf="productForm.get('clientId')?.hasError('required')">
-            Seleccione un cliente
-          </mat-error>
-        </mat-form-field>
-      </form>
-    </mat-dialog-content>
-
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">Cancelar</button>
-      <button mat-raised-button color="primary" 
-              [disabled]="productForm.invalid || isLoading"
-              (click)="onSave()">
-        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
-        <span *ngIf="!isLoading">{{ data.isEdit ? 'Actualizar' : 'Crear' }}</span>
-      </button>
-    </mat-dialog-actions>
-  `,
+  templateUrl: './product-edit-dialog.component.html',
   styles: [`
-    .full-width {
-      width: 100%;
-      margin-bottom: 16px;
+    .dialog-container {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 136, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
-    h2 {
+    .dialog-header {
+      background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #00ff88;
+    }
+
+    .dialog-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0;
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .title-icon {
+      color: #00ff88;
+      font-size: 1.4rem;
+      width: 1.4rem;
+      height: 1.4rem;
+    }
+
+    .close-button {
+      color: #00ff88;
+      transition: all 0.3s ease;
+    }
+
+    .close-button:hover {
+      background: rgba(0, 255, 136, 0.1);
+      transform: scale(1.1);
+    }
+
+    .dialog-content {
+      padding: 24px;
+      background: rgba(26, 26, 26, 0.8);
+    }
+
+    .product-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .half-width {
+      width: calc(50% - 8px);
+    }
+
+    .form-input, .form-select {
+      color: #ffffff;
+    }
+
+    .field-icon {
+      color: #00ff88;
+    }
+
+    .error-text {
+      color: #ff4757;
+      font-size: 0.85rem;
+    }
+
+    .client-option {
+      color: #e0e0e0;
+      padding: 8px 16px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      gap: 16px;
+    }
+
+    .cancel-button {
+      color: #b0b0b0;
+      border: 1px solid #666;
+      padding: 12px 24px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .cancel-button:hover {
+      color: #e0e0e0;
+      border-color: #00ff88;
+      background: rgba(0, 255, 136, 0.05);
+    }
+
+    .submit-button {
+      background: linear-gradient(90deg, #00ff88 0%, #00cc6a 100%);
+      color: #000;
+      font-weight: 600;
+      padding: 12px 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 255, 136, 0.3);
+      transition: all 0.3s ease;
+      font-size: 1rem;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    mat-dialog-content {
-      min-width: 500px;
-      max-height: 70vh;
-      overflow-y: auto;
+    .submit-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 255, 136, 0.4);
     }
 
-    mat-dialog-actions {
-      padding: 16px 0;
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
-    @media (max-width: 768px) {
-      mat-dialog-content {
-        min-width: 300px;
+    .button-spinner {
+      margin-right: 8px;
+    }
+
+    .button-icon {
+      margin-right: 8px;
+    }
+
+    .button-text {
+      font-weight: 600;
+    }
+
+    /* Material Form Field Customization */
+    ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+      color: rgba(0, 255, 136, 0.3);
+    }
+
+    ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field-label {
+      color: #b0b0b0;
+    }
+
+    ::ng-deep .mat-form-field.mat-focused .mat-form-field-label {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+      color: #00ff88;
+    }
+
+    ::ng-deep .mat-select-value {
+      color: #333333;
+    }
+
+    ::ng-deep .mat-select-arrow {
+      color: #00ff88;
+    }
+
+    /* Input field styling for better contrast */
+    ::ng-deep .mat-form-field .mat-form-field-infix {
+      background-color: #ffffff !important;
+      border-radius: 4px;
+      padding: 8px 12px;
+    }
+
+    ::ng-deep .mat-form-field input.mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field textarea.mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-input-element {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field .mat-form-field-infix input {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-form-field input::placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-webkit-input-placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-moz-placeholder {
+      color: #666666 !important;
+    }
+
+    ::ng-deep .mat-form-field input:-ms-input-placeholder {
+      color: #666666 !important;
+    }
+
+    /* Select dropdown styling */
+    ::ng-deep .mat-select-panel {
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-option {
+      color: #333333 !important;
+      background-color: #ffffff !important;
+    }
+
+    ::ng-deep .mat-option:hover {
+      background-color: #f0f0f0 !important;
+      color: #00ff88 !important;
+    }
+
+    ::ng-deep .mat-option.mat-selected {
+      background-color: #e8f5e8 !important;
+      color: #00ff88 !important;
+    }
+
+    @media (max-width: 600px) {
+      .dialog-header {
+        padding: 16px 20px;
+      }
+
+      .dialog-title {
+        font-size: 1.2rem;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+
+      .dialog-content {
+        padding: 20px;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .half-width {
+        width: 100%;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        gap: 16px;
       }
     }
   `]
@@ -133,7 +310,7 @@ export interface ProductDialogData {
 export class ProductEditDialogComponent implements OnInit {
   productForm: FormGroup;
   isLoading = false;
-  clients: Client[] = [];
+  clients: ClientForProductSelection[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -145,37 +322,43 @@ export class ProductEditDialogComponent implements OnInit {
   ) {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
-      price: [0, [Validators.required, Validators.min(0.01)]],
-      clientId: ['', [Validators.required]]
+      productType: ['', [Validators.required]],
+      balance: [0, [Validators.required, Validators.min(0)]],
+      clientId: ['', this.data.isEdit ? [] : [Validators.required]]
     });
   }
 
   ngOnInit(): void {
-    this.loadClients();
-    
+    if (!this.data.isEdit) {
+      this.loadClients();
+    }
+
     if (this.data.isEdit && this.data.product) {
+      console.log('Initializing form for edit with product:', this.data.product);
       this.productForm.patchValue({
         name: this.data.product.name,
-        description: this.data.product.description,
-        price: this.data.product.price,
-        clientId: this.data.product.clientId
+        productType: this.data.product.productType,
+        balance: this.data.product.balance
       });
+      console.log('Form after patchValue:', this.productForm.value);
+      console.log('Form valid after patchValue:', this.productForm.valid);
     }
   }
 
   loadClients(): void {
-    this.clientService.getAllClients().subscribe({
+    this.clientService.getAllClientsWithIds().subscribe({
       next: (clients) => {
         this.clients = clients;
+        console.log('Loaded clients for product creation:', clients);
       },
       error: (error) => {
+        console.error('Error loading clients:', error);
         this.snackBar.open('Error al cargar los clientes', 'Cerrar', { duration: 5000 });
       }
     });
   }
 
-  onSave(): void {
+  async onSave(): Promise<void> {
     if (this.productForm.valid) {
       this.isLoading = true;
 
@@ -183,10 +366,13 @@ export class ProductEditDialogComponent implements OnInit {
         // Update existing product
         const updateRequest: UpdateProductRequest = {
           name: this.productForm.value.name,
-          description: this.productForm.value.description,
-          price: this.productForm.value.price
+          productType: this.productForm.value.productType,
+          balance: this.productForm.value.balance
         };
 
+        console.log('Update request:', updateRequest);
+        console.log('Product ID:', this.data.product.id);
+        console.log('Form values:', this.productForm.value);
         this.productService.updateProduct(this.data.product.id, updateRequest).subscribe({
           next: (product) => {
             this.isLoading = false;
@@ -195,12 +381,59 @@ export class ProductEditDialogComponent implements OnInit {
           },
           error: (error) => {
             this.isLoading = false;
-            this.snackBar.open('Error al actualizar el producto', 'Cerrar', { duration: 5000 });
+            console.error('Error updating product:', error);
+            console.error('Error details:', {
+              status: error.status,
+              message: error.message,
+              error: error.error
+            });
+            this.snackBar.open(`Error al actualizar el producto: ${error.status} - ${error.message}`, 'Cerrar', { duration: 5000 });
           }
         });
       } else {
         // Create new product
-        const createRequest: CreateProductRequest = this.productForm.value;
+        const formValue = this.productForm.value;
+        console.log('Form value clientId:', formValue.clientId);
+        console.log('Type of formValue.clientId:', typeof formValue.clientId);
+        console.log('Available clients:', this.clients);
+
+        let selectedClient = this.clients.find(c => {
+          console.log(`Comparing client ${c.id} (${typeof c.id}) with formValue.clientId ${formValue.clientId} (${typeof formValue.clientId})`);
+          return c.id === formValue.clientId || String(c.id) === String(formValue.clientId);
+        });
+
+        if (!selectedClient) {
+          console.error('Client not found. Available clients:', this.clients);
+          console.error('Looking for clientId:', formValue.clientId);
+          this.isLoading = false;
+          this.snackBar.open('Cliente no encontrado', 'Cerrar', { duration: 5000 });
+          return;
+        }
+
+        console.log('Selected client:', selectedClient);
+        console.log('Client ID:', selectedClient.id);
+
+        if (!selectedClient.id || selectedClient.id <= 0) {
+          console.error('Invalid client ID:', selectedClient.id);
+          this.isLoading = false;
+          this.snackBar.open('ID de cliente inválido. Intente recargar la lista de clientes.', 'Cerrar', { duration: 5000 });
+          return;
+        }
+
+        const createRequest: CreateProductRequest = {
+          clientId: selectedClient.id,
+          productType: formValue.productType,
+          name: formValue.name,
+          balance: Number(formValue.balance)
+        };
+
+        console.log('Create request:', createRequest);
+        if (!createRequest.productType) {
+          console.error('Invalid productType:', createRequest.productType);
+          this.isLoading = false;
+          this.snackBar.open('Error: Tipo de producto requerido', 'Cerrar', { duration: 5000 });
+          return;
+        }
 
         this.productService.createProduct(createRequest).subscribe({
           next: (product) => {
@@ -210,10 +443,22 @@ export class ProductEditDialogComponent implements OnInit {
           },
           error: (error) => {
             this.isLoading = false;
-            this.snackBar.open('Error al crear el producto', 'Cerrar', { duration: 5000 });
+            console.error('Error creating product:', error);
+            this.snackBar.open('Error al crear el producto. Verifique los datos.', 'Cerrar', { duration: 5000 });
           }
         });
       }
+    } else {
+      console.log('Form is invalid:', this.productForm.errors);
+      console.log('Form controls:', Object.keys(this.productForm.controls).map(key => ({
+        key,
+        value: this.productForm.get(key)?.value,
+        errors: this.productForm.get(key)?.errors,
+        valid: this.productForm.get(key)?.valid
+      })));
+      console.log('Form valid:', this.productForm.valid);
+      console.log('Form dirty:', this.productForm.dirty);
+      console.log('Form touched:', this.productForm.touched);
     }
   }
 
