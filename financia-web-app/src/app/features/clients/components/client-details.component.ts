@@ -389,15 +389,18 @@ export class ClientDetailsComponent implements OnInit {
 
   loadClientDetails(): void {
     this.isLoading = true;
+    console.log('Loading client details for encrypted code:', this.encryptedCode);
+    
     this.clientService.getClientByEncryptedCode(this.encryptedCode).subscribe({
       next: (client) => {
         this.client = client;
         this.isLoading = false;
-        console.log('Loaded client details:', client);
+        console.log('✅ Loaded client details:', client);
       },
       error: (error) => {
         this.isLoading = false;
-        console.error('Error loading client details:', error);
+        console.error('❌ Error loading client details:', error);
+        console.error('Encrypted code used:', this.encryptedCode);
       }
     });
   }

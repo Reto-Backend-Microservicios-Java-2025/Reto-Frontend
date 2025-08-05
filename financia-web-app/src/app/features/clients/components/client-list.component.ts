@@ -361,7 +361,20 @@ export class ClientListComponent implements OnInit {
   }
 
   viewClientDetails(uniqueCode: string): void {
-    this.router.navigate(['/clients/ingresar-codigo'], { queryParams: { encryptedCode: uniqueCode } });
+    console.log('Viewing client details for encrypted code:', uniqueCode);
+    
+    // Use the encrypted uniqueCode directly to get client details
+    this.clientService.getClientByEncryptedCode(uniqueCode).subscribe({
+      next: (client) => {
+        console.log('Client details found:', client);
+        // Navigate directly to client details page
+        this.router.navigate(['/clients', uniqueCode]);
+      },
+      error: (error) => {
+        console.error('Error getting client details:', error);
+        this.snackBar.open('Error al obtener detalles del cliente', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 
   viewClientProducts(uniqueCode: string): void {
