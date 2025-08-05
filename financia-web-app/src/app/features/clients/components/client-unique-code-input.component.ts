@@ -29,9 +29,13 @@ import { MatIconModule } from '@angular/material/icon';
           <form (ngSubmit)="onSubmit()" autocomplete="off">
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Ingrese UniqueCode Encriptado</mat-label>
-              <input matInput [(ngModel)]="encryptedCode" name="encryptedCode" type="text" required autocomplete="off">
+              <input matInput [(ngModel)]="encryptedCodeInput" name="encryptedCodeInput" type="text" required autocomplete="off">
+              <mat-hint *ngIf="expectedEncryptedCode">Sugerencia: {{ expectedEncryptedCode }}</mat-hint>
             </mat-form-field>
-            <button mat-raised-button color="primary" class="full-width" [disabled]="!encryptedCode">Ver Detalles</button>
+            <button mat-raised-button color="primary" class="full-width" [disabled]="!encryptedCodeInput">Ver Detalles</button>
+            <div *ngIf="errorMessage" class="error-message">
+              <mat-icon color="warn">error</mat-icon> {{ errorMessage }}
+            </div>
           </form>
         </mat-card-content>
       </mat-card>
@@ -75,11 +79,22 @@ import { MatIconModule } from '@angular/material/icon';
   `]
 })
 export class ClientUniqueCodeInputComponent {
-  encryptedCode: string = '';
-  constructor(private router: Router) {}
+  encryptedCodeInput: string = '';
+  expectedEncryptedCode: string = '';
+  errorMessage: string = '';
+  constructor(private router: Router, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      this.expectedEncryptedCode = params['encryptedCode'] || '';
+    });
+  }
 
   onSubmit(): void {
-    if (!this.encryptedCode) return;
-    this.router.navigate(['/clients', this.encryptedCode]);
+    if (!this.encryptedCodeInput) return;
+    if (this.expectedEncryptedCode && this.encryptedCodeInput !== this.expectedEncryptedCode) {
+      this.errorMessage = 'El código ingresado no coincide con el código esperado.';
+      return;
+    }
+    this.errorMessage = '';
+    this.router.navigate(['/clients', this.encryptedCodeInput]);
   }
 }

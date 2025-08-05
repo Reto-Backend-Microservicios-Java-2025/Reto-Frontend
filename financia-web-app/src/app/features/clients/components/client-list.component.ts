@@ -136,6 +136,9 @@ import { User } from '../../../shared/models/user.model';
                        <button mat-icon-button color="accent" (click)="viewClientProducts(client.uniqueCode)">
                          <mat-icon>inventory</mat-icon>
                        </button>
+                       <button mat-icon-button color="warn" (click)="deleteClient(client)">
+                         <mat-icon>delete</mat-icon>
+                       </button>
                      </td>
                    </ng-container>
 
@@ -284,8 +287,7 @@ export class ClientListComponent implements OnInit {
   }
 
   viewClientDetails(uniqueCode: string): void {
-    const encryptedCode = uniqueCode;
-    this.router.navigate(['/clients', encryptedCode]);
+    this.router.navigate(['/clients/ingresar-codigo'], { queryParams: { encryptedCode: uniqueCode } });
   }
 
   viewClientProducts(uniqueCode: string): void {
@@ -303,6 +305,21 @@ export class ClientListComponent implements OnInit {
         this.snackBar.open('Error al obtener detalles del cliente', 'Cerrar', { duration: 3000 });
       }
     });
+  }
+
+  deleteClient(client: Client): void {
+    if (confirm(`¿Seguro que deseas eliminar al cliente ${client.full_name} ${client.full_last_name}?`)) {
+      this.clientService.deleteClient(client.uniqueCode).subscribe({
+        next: () => {
+          this.snackBar.open('Cliente eliminado exitosamente', 'Cerrar', { duration: 3000 });
+          this.loadClients();
+        },
+        error: (error) => {
+          this.snackBar.open('Error al eliminar el cliente', 'Cerrar', { duration: 5000 });
+          console.error('Error deleting client:', error);
+        }
+      });
+    }
   }
 
   private encryptUniqueCode(uniqueCode: string | number): string {

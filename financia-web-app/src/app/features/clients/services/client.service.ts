@@ -54,6 +54,10 @@ export class ClientService {
     return this.httpClient.post<Client>(this.endpoint, request);
   }
 
+  deleteClient(encryptedCode: string): Observable<void> {
+    return this.httpClient.delete<void>(`${this.endpoint}/${encryptedCode}`);
+  }
+
   // Utility method to encrypt uniqueCode for navigation
   encryptUniqueCode(uniqueCode: number): string {
     // AES/ECB/PKCS5Padding con clave 1234567890123456, salida Base64
