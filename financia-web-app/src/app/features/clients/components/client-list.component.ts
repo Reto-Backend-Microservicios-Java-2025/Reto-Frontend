@@ -336,6 +336,17 @@ export class ClientListComponent implements OnInit {
         console.log('Loaded clients:', clients);
         console.log('First client uniqueCode:', clients[0]?.uniqueCode);
         console.log('Type of first client uniqueCode:', typeof clients[0]?.uniqueCode);
+        
+        // Log all clients and their uniqueCodes
+        clients.forEach((client, index) => {
+          console.log(`Client ${index + 1}:`, {
+            name: `${client.full_name} ${client.full_last_name}`,
+            uniqueCode: client.uniqueCode,
+            type: typeof client.uniqueCode,
+            id: client.id
+          });
+        });
+        
         this.isLoading = false;
       },
       error: (error) => {
@@ -354,26 +365,26 @@ export class ClientListComponent implements OnInit {
   }
 
   viewClientProducts(uniqueCode: string): void {
-    // For products, we need the actual client ID, not uniqueCode
-    // We'll need to get the client details first to get the ID
-    console.log('Original uniqueCode:', uniqueCode);
-    console.log('Type of uniqueCode:', typeof uniqueCode);
+    // Find the client by uniqueCode to get the ID
+    const client = this.clients.find(c => String(c.uniqueCode) === uniqueCode);
     
-    // Use the uniqueCode directly as it's probably already encrypted
-    const encryptedCode = uniqueCode;
-    console.log('Using encrypted code directly:', encryptedCode);
+    if (!client) {
+      console.error('Client not found for uniqueCode:', uniqueCode);
+      this.snackBar.open('Cliente no encontrado', 'Cerrar', { duration: 3000 });
+      return;
+    }
     
-    // Get client details to get the actual ID
-    this.clientService.getClientByEncryptedCode(encryptedCode).subscribe({
-      next: (client) => {
-        console.log('Client found:', client);
-        this.router.navigate(['/products'], { queryParams: { clientId: client.id } });
-      },
-      error: (error) => {
-        console.error('Error getting client details:', error);
-        this.snackBar.open('Error al obtener detalles del cliente', 'Cerrar', { duration: 3000 });
-      }
-    });
+    console.log('Found client:', client);
+    console.log('Client ID:', client.id);
+    
+    if (!client.id || client.id <= 0) {
+      console.error('Invalid client ID:', client.id);
+      this.snackBar.open('ID de cliente inválido', 'Cerrar', { duration: 3000 });
+      return;
+    }
+    
+    // Navigate directly using the client ID
+    this.router.navigate(['/products'], { queryParams: { clientId: client.id } });
   }
 
   deleteClient(client: Client): void {
